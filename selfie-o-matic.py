@@ -82,7 +82,6 @@ class SelfieOMatic(object):
 		if key == ord('q'):
 			self._is_running = False
 		elif key == ord('s'):
-			self._processors = []
 
 			processor = CountdownTask()
 			processor.init()
@@ -104,8 +103,6 @@ class SelfieOMatic(object):
 	def __process_frame(self, frame):
 		if len(self._processors) > 0:
 			processor = self._processors[0]
-			print "processing {0}".format(processor)
-
 			if processor.is_completed():
 				self._processors.remove(processor)
 			else:

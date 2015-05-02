@@ -34,6 +34,8 @@ class PostOnFbTask(TaskFrameProcessorBase):
 		diff_time = int(round(time.time() - self.start_time))
 		if diff_time < self.WAIT_SECONDS:
 			frame = overlay_image(frame, self.like_image)
+		else:
+			self._is_completed = True
 
 		return frame
 
