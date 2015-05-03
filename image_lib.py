@@ -11,7 +11,7 @@ import numpy as np
 __author__ = "Fabrizio Guglielmino"
 
 
-def overlay_image(original, mark):
+def overlay_image_old(original, mark):
 	orig_h, orig_w = original.shape[:2]
 	mark_h, mark_w = mark.shape[:2]
 
@@ -24,14 +24,33 @@ def overlay_image(original, mark):
 
 	return np.array(np.clip(original + overlay, 0, 255), "uint8")
 
-def fadein_images(img1, img2): 
-	for IN in range(0,10):
-		fadein = IN/10.0
-		dst = cv2.addWeighted( img1, fadein, img2, fadein, 0)
-		ime.sleep(0.05)
-		if fadein == 1.0: #blendmode mover
-			fadein = 1.0
-		return dst
+
+def overlay_image(original, mark):
+	orig_h, orig_w = original.shape[:2]
+	# Region of interest
+	mark_h, mark_w,channels = mark.shape
+
+	mark_y = (orig_h - mark_h) / 2
+	mark_x = (orig_w - mark_w) / 2
+
+	#roi = original[0:mark_h, 0:mark_w ]
+	roi = original[mark_y:mark_h+mark_y, mark_x:mark_w+mark_x]
+
+	img2gray = cv2.cvtColor(mark,cv2.COLOR_BGR2GRAY)
+	ret, mask = cv2.threshold(img2gray, 10, 255, cv2.THRESH_BINARY)
+	mask_inv = cv2.bitwise_not(mask)
+	# Black della ROI
+	img1_bg = cv2.bitwise_and(roi,roi,mask = mask_inv)
+	# Estrazione della parte interessare
+	img2_fg = cv2.bitwise_and(mark,mark,mask = mask)
+
+	# Creazione dell'immagine da sovraimporre
+	dst = cv2.add(img1_bg,img2_fg)
+
+	original[mark_y:mark_h+mark_y, mark_x:mark_w+mark_x] = dst
+
+	return original
+
 
 def fadein(img1, img2, fade_value): 
 	fadein = fade_value/10.0
