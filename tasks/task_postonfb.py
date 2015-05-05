@@ -23,7 +23,7 @@ class PostOnFbTask(TaskFrameProcessorBase):
 	start_time = None
 	like_image = cv2.imread('res/images/fb_like.png')
 	
-	def init(self):
+	def __init__(self):
 		self._is_completed = False
 
 

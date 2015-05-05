@@ -31,7 +31,7 @@ class CountdownTask(TaskFrameProcessorBase):
 	 			cv2.imread('res/images/1.png') 
                ]
 
-	def init(self):
+	def __init__(self):
 		self._is_completed = False
 
 

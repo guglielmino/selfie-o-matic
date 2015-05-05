@@ -84,19 +84,15 @@ class SelfieOMatic(object):
 		elif key == ord('s'):
 
 			processor = CountdownTask()
-			processor.init()
 			self._processors.append(processor)
 
 			fade = FadeToWhiteTask()
-			fade.init()
 			self._processors.append(fade)
 
 			snap = SnapShotTask()
-			snap.init()
 			self._processors.append(snap)
 
 			postfb = PostOnFbTask()
-			postfb.init()
 			self._processors.append(postfb)
 
 

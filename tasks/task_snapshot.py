@@ -25,7 +25,7 @@ class SnapShotTask(TaskFrameProcessorBase):
 	still_frame = None
 	start_time = None
 
-	def init(self):
+	def __init__(self):
 		self._is_completed = False
 	
 	def process_frame(self, frame):

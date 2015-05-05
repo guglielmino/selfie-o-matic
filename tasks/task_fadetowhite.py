@@ -23,7 +23,7 @@ class FadeToWhiteTask(TaskFrameProcessorBase):
 	_is_completed = False
 	_fade_value = 6
 	
-	def init(self):
+	def __init__(self):
 		self._is_completed = False
 
 
