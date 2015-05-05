@@ -4,6 +4,7 @@
 
 import sys, os
 import time
+import io
 
 try:
     from picamera.array import PiRGBArray
@@ -36,6 +37,7 @@ class SelfieOMatic(object):
 	_is_running = False
 	# TODO: Coda di frame processors
 	_processors = []
+	rawCapture = None
 
 
 	def __init__(self, device=0):
@@ -44,11 +46,11 @@ class SelfieOMatic(object):
 		self.cap = None
  		try:
 			self.camera = PiCamera()
-
-			self.camera.framerate = 32
-			self.rawCapture = PiRGBArray(camera)
-			time.sleep(0.1)
+			self.rawCapture = PiRGBArray(self.camera)
+			time.sleep(0.3)
+			
 		except:
+                        print "fallback OpenCV standard"
 			self.cap = cv2.VideoCapture(device)
 
 
@@ -71,18 +73,19 @@ class SelfieOMatic(object):
 	def __get_frame(self):
 		frame = None
 		if self.camera:
-			img  = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
-			frame = img.next().array
+                        img = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
+			frame = np.array(img.next().array, copy=True)
 		else:
 			ret, frame = self.cap.read()
 		return frame
 
 	def __process_input(self):
-		key = cv2.waitKey(100)
+		key = cv2.waitKey(10)
 		if key == ord('q'):
+                        print "QUIT"
 			self._is_running = False
 		elif key == ord('s'):
-
+                        print "PROCESSOR"
 			processor = CountdownTask()
 			self._processors.append(processor)
 
