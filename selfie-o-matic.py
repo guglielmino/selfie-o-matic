@@ -46,6 +46,7 @@ class SelfieOMatic(object):
 		self.cap = None
  		try:
 			self.camera = PiCamera()
+			self.camera.start_preview()
 			self.rawCapture = PiRGBArray(self.camera)
 			time.sleep(0.3)
 			
@@ -67,6 +68,8 @@ class SelfieOMatic(object):
 	def cleanup(self):
 		if self.cap :
 			self.cap.release()
+		if self.camera:
+			self.camera.stop_preview()
 		cv2.destroyAllWindows()
 
 
@@ -75,7 +78,6 @@ class SelfieOMatic(object):
 		if self.camera:
 			img = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
 			frame = np.array(img.next().array, copy=True)
-			self.rawCapture.truncate(0)
 		else:
 			ret, frame = self.cap.read()
 		return frame
