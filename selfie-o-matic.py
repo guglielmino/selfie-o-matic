@@ -50,7 +50,7 @@ class SelfieOMatic(object):
 			time.sleep(0.3)
 			
 		except:
-                        print "fallback OpenCV standard"
+			print "fallback OpenCV standard"
 			self.cap = cv2.VideoCapture(device)
 
 
@@ -73,8 +73,9 @@ class SelfieOMatic(object):
 	def __get_frame(self):
 		frame = None
 		if self.camera:
-                        img = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
+			img = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
 			frame = np.array(img.next().array, copy=True)
+			self.rawCapture.truncate(0)
 		else:
 			ret, frame = self.cap.read()
 		return frame
