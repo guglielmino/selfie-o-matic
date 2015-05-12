@@ -15,7 +15,7 @@ import numpy as np
 import logging
 import settings
 
-from image_lib import overlay_image
+from image_lib import overlay_image, overlay_np_image_pi
 from task_common import TaskFrameProcessorBase
 
 class CountdownTask(TaskFrameProcessorBase):
@@ -44,7 +44,10 @@ class CountdownTask(TaskFrameProcessorBase):
 
 		if diff_time < 3:
 			img = self.counters[diff_time]
-			frame = overlay_image(frame, img)
+			if self.ctx.camera is None:
+				frame = overlay_image(frame, img)
+			else:
+				overlay_np_image_pi(self.ctx.camera, img)
 		else:
 			self._is_completed = True
 

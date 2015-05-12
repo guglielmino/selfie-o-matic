@@ -8,6 +8,14 @@ import cv2
 from cv2 import VideoCapture
 import numpy as np
 
+try:
+    from picamera.array import PiRGBArray
+    from picamera import PiCamera
+except:
+    pass
+
+from PIL import Image
+
 __author__ = "Fabrizio Guglielmino"
 
 
@@ -24,6 +32,20 @@ def overlay_image_old(original, mark):
 
 	return np.array(np.clip(original + overlay, 0, 255), "uint8")
 
+def overlay_pil_image_pi(camera, mask):
+	pad = Image.new('RGB', (
+    ((img.size[0] + 31) // 32) * 32,
+    ((img.size[1] + 15) // 16) * 16,
+    ))
+
+	pad.paste(img, (0, 0))
+
+	o = camera.add_overlay(pad.tostring(), size=img.size)
+	o.alpha = 255
+	o.layer = 3
+
+def overlay_np_image_pi(camera, mask):
+	camera.add_overlay(np.getbuffer(mask), layer=3, alpha=128)
 
 
 def overlay_image(original, mark):

@@ -95,10 +95,8 @@ class SelfieOMatic(object):
 	def __process_input(self):
 		key = cv2.waitKey(10)
 		if key == ord('q'):
-                        print "QUIT"
 			self._is_running = False
 		elif key == ord('s'):
-                        print "PROCESSOR"
 			processor = CountdownTask(self.ctx)
 			self._processors.append(processor)
 
@@ -122,8 +120,10 @@ class SelfieOMatic(object):
 		return frame
 
 	def __show_frame(self, frame):
-		cv2.imshow(settings.APP_NAME, frame)
-		if self.ctx.camera:
+		# Camera uses "start_preview"
+		if self.ctx.camera is None:
+			cv2.imshow(settings.APP_NAME, frame)
+		else:
 			self.rawCapture.truncate(0)
 
 
