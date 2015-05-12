@@ -1,8 +1,9 @@
 
 class TaskFrameProcessorBase(object):
+	device_ctx = None
 
-	def init(self):
-		raise NotImplementedError("Method must be implemented from subclass")
+	def init(self, ctx):
+		self.device_ctx = ctx
 
 	def process_frame(self, frameIm):
 		raise NotImplementedError("Method must be implemented from subclass")

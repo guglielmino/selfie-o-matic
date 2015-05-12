@@ -25,6 +25,7 @@ def overlay_image_old(original, mark):
 	return np.array(np.clip(original + overlay, 0, 255), "uint8")
 
 
+
 def overlay_image(original, mark):
 	orig_h, orig_w = original.shape[:2]
 	# Region of interest

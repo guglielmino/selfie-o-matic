@@ -32,22 +32,31 @@ from tasks.task_postonfb import PostOnFbTask
 
 __author__ = "Fabrizio Guglielmino"
 
+class DeviceContext(object):
+	camera = None
+	cap = None
+
+	def __init__(self, camera, cap):
+		self.camera = camera
+		self.cap = cap
 
 class SelfieOMatic(object):
 	_is_running = False
 	# TODO: Coda di frame processors
 	_processors = []
 	rawCapture = None
+	ctx = DeviceContext(None, None)
 
 
 	def __init__(self, device=0):
 
-		self.camera = None
+		self.ctx.camera = None
 		self.cap = None
  		try:
-			self.camera = PiCamera()
-			self.camera.start_preview()
-			self.rawCapture = PiRGBArray(self.camera)
+			self.ctx.camera = PiCamera()
+			self.ctx.camera.start_preview()
+			self.ctx.camera.framerate = (640, 480)
+			self.rawCapture = PiRGBArray(self.ctx.camera)
 			time.sleep(0.3)
 			
 		except:
@@ -68,15 +77,16 @@ class SelfieOMatic(object):
 	def cleanup(self):
 		if self.cap :
 			self.cap.release()
-		if self.camera:
-			self.camera.stop_preview()
+		if self.ctx.camera:
+			self.ctx.camera.stop_preview()
+			self.ctx.camera.close()
 		cv2.destroyAllWindows()
 
 
 	def __get_frame(self):
 		frame = None
-		if self.camera:
-			img = self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True)
+		if self.ctx.camera:
+			img = self.ctx.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=False)
 			frame = np.array(img.next().array, copy=True)
 		else:
 			ret, frame = self.cap.read()
@@ -89,16 +99,16 @@ class SelfieOMatic(object):
 			self._is_running = False
 		elif key == ord('s'):
                         print "PROCESSOR"
-			processor = CountdownTask()
+			processor = CountdownTask(self.ctx)
 			self._processors.append(processor)
 
-			fade = FadeToWhiteTask()
+			fade = FadeToWhiteTask(self.ctx)
 			self._processors.append(fade)
 
-			snap = SnapShotTask()
+			snap = SnapShotTask(self.ctx)
 			self._processors.append(snap)
 
-			postfb = PostOnFbTask()
+			postfb = PostOnFbTask(self.ctx)
 			self._processors.append(postfb)
 
 
@@ -113,7 +123,7 @@ class SelfieOMatic(object):
 
 	def __show_frame(self, frame):
 		cv2.imshow(settings.APP_NAME, frame)
-		if self.camera:
+		if self.ctx.camera:
 			self.rawCapture.truncate(0)
 
 
