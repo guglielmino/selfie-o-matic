@@ -35,9 +35,9 @@ def overlay_image_old(original, mark):
 def overlay_pil_image_pi(camera, mask):
 	pad = Image.new('RGB', camera.resolution)
 
-	pad.paste(img, (0, 0))
+	pad.paste(mask, (0, 0))
 
-	o = camera.add_overlay(pad.tostring(), size=img.size)
+	o = camera.add_overlay(pad.tostring(), size=mask.size)
 	o.alpha = 255
 	o.layer = 3
 

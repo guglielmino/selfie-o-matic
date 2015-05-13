@@ -16,7 +16,7 @@ import logging
 import settings
 from PIL import Image
 
-from image_lib import overlay_image, overlay_np_image_pi
+from image_lib import overlay_image, overlay_np_image_pi, overlay_pil_image_pi
 from task_common import TaskFrameProcessorBase
 
 class CountdownTask(TaskFrameProcessorBase):
@@ -53,10 +53,10 @@ class CountdownTask(TaskFrameProcessorBase):
 
 		if diff_time < 3:
 			img = self.counters[diff_time]
-			if self.ctx.camera is None:
+			if self.device_ctx.camera is None:
 				frame = overlay_image(frame, img)
 			else:
-				overlay_pil_image_pi(self.ctx.camera, self.pil_img[diff_time])
+				overlay_pil_image_pi(self.device_ctx.camera, self.pil_img[diff_time])
 		else:
 			self._is_completed = True
 
