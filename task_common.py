@@ -2,7 +2,7 @@
 class TaskFrameProcessorBase(object):
 	device_ctx = None
 
-	def init(self, ctx):
+	def __init__(self, ctx):
 		self.device_ctx = ctx
 
 	def process_frame(self, frameIm):
