@@ -53,6 +53,8 @@ class SelfieOMatic(object):
         self.ctx.camera = None
         self.cap = None
         try:
+            cv2.namedWindow("MainWin")
+
             self.ctx.camera = PiCamera()
             self.ctx.camera.start_preview()
             self.ctx.camera.framerate = 24
@@ -87,8 +89,9 @@ class SelfieOMatic(object):
     def __get_frame(self):
         frame = None
         if self.ctx.camera:
-            img = self.ctx.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=False)
-            frame = np.array(img.next().array, copy=True)
+            #img = self.ctx.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=False)
+            #frame = np.array(img.next().array, copy=True)
+            pass
         else:
             ret, frame = self.cap.read()
         return frame
