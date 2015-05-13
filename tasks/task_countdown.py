@@ -56,7 +56,7 @@ class CountdownTask(TaskFrameProcessorBase):
 			if self.device_ctx.camera is None:
 				frame = overlay_image(frame, img)
 			else:
-				overlay_pil_image_pi(self.device_ctx.camera, self.pil_img[diff_time])
+				overlay_pil_image_pi(self.device_ctx.camera, self.pil_img[diff_time], (640, 480))
 		else:
 			self._is_completed = True
 

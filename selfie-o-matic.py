@@ -59,6 +59,7 @@ class SelfieOMatic(object):
             self.ctx.camera.start_preview()
             self.ctx.camera.framerate = 24
             self.ctx.camera.resolution = (640, 480)
+            self.ctx.camera.preview_fullscreen = False
             self.ctx.camera.preview_window = (0, 0, 640, 480)
             self.rawCapture = PiRGBArray(self.ctx.camera)
             time.sleep(0.3)
@@ -105,14 +106,14 @@ class SelfieOMatic(object):
             processor = CountdownTask(self.ctx)
             self._processors.append(processor)
 
-            fade = FadeToWhiteTask(self.ctx)
-            self._processors.append(fade)
+            #fade = FadeToWhiteTask(self.ctx)
+            #self._processors.append(fade)
 
-            snap = SnapShotTask(self.ctx)
-            self._processors.append(snap)
+            #snap = SnapShotTask(self.ctx)
+            #self._processors.append(snap)
 
-            postfb = PostOnFbTask(self.ctx)
-            self._processors.append(postfb)
+            #postfb = PostOnFbTask(self.ctx)
+            #self._processors.append(postfb)
 
 
     def __process_frame(self, frame):
