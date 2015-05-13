@@ -33,105 +33,105 @@ from tasks.task_postonfb import PostOnFbTask
 __author__ = "Fabrizio Guglielmino"
 
 class DeviceContext(object):
-	camera = None
-	cap = None
+    camera = None
+    cap = None
 
-	def __init__(self, camera, cap):
-		self.camera = camera
-		self.cap = cap
+    def __init__(self, camera, cap):
+        self.camera = camera
+        self.cap = cap
 
 class SelfieOMatic(object):
-	_is_running = False
-	# TODO: Coda di frame processors
-	_processors = []
-	rawCapture = None
-	ctx = DeviceContext(None, None)
+    _is_running = False
+    # TODO: Coda di frame processors
+    _processors = []
+    rawCapture = None
+    ctx = DeviceContext(None, None)
 
 
-	def __init__(self, device=0):
+    def __init__(self, device=0):
 
-		self.ctx.camera = None
-		self.cap = None
- 		try:
-			self.ctx.camera = PiCamera()
-			self.ctx.camera.start_preview()
-			self.ctx.camera.framerate = 24
-			self.ctx.camera.preview_window = (0, 0, 640, 480)
-			self.rawCapture = PiRGBArray(self.ctx.camera)
-			time.sleep(0.3)
-			
-		except:
-			print "fallback OpenCV standard"
-			self.cap = cv2.VideoCapture(device)
-
-
-	def run(self):
-		self._is_running = True
-		while self._is_running:
-			frame = self.__get_frame()
-			self.__process_input()
-			frame = self.__process_frame(frame)
-			self.__show_frame(frame)
-			time.sleep(0.05)
+        self.ctx.camera = None
+        self.cap = None
+        try:
+            self.ctx.camera = PiCamera()
+            self.ctx.camera.start_preview()
+            self.ctx.camera.framerate = 24
+            self.ctx.camera.preview_window = (0, 0, 640, 480)
+            self.rawCapture = PiRGBArray(self.ctx.camera)
+            time.sleep(0.3)
+            
+        except:
+            print "fallback OpenCV standard"
+            self.cap = cv2.VideoCapture(device)
 
 
-	def cleanup(self):
-		if self.cap :
-			self.cap.release()
-		if self.ctx.camera:
-			self.ctx.camera.stop_preview()
-			self.ctx.camera.close()
-		cv2.destroyAllWindows()
+    def run(self):
+        self._is_running = True
+        while self._is_running:
+            frame = self.__get_frame()
+            self.__process_input()
+            frame = self.__process_frame(frame)
+            self.__show_frame(frame)
+            time.sleep(0.05)
 
 
-	def __get_frame(self):
-		frame = None
-		if self.ctx.camera:
-			img = self.ctx.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=False)
-			frame = np.array(img.next().array, copy=True)
-		else:
-			ret, frame = self.cap.read()
-		return frame
-
-	def __process_input(self):
-		key = cv2.waitKey(10)
-		if key == ord('q'):
-			self._is_running = False
-		elif key == ord('s'):
-			processor = CountdownTask(self.ctx)
-			self._processors.append(processor)
-
-			fade = FadeToWhiteTask(self.ctx)
-			self._processors.append(fade)
-
-			snap = SnapShotTask(self.ctx)
-			self._processors.append(snap)
-
-			postfb = PostOnFbTask(self.ctx)
-			self._processors.append(postfb)
+    def cleanup(self):
+        if self.cap :
+            self.cap.release()
+        if self.ctx.camera:
+            self.ctx.camera.stop_preview()
+            self.ctx.camera.close()
+        cv2.destroyAllWindows()
 
 
-	def __process_frame(self, frame):
-		if len(self._processors) > 0:
-			processor = self._processors[0]
-			if processor.is_completed():
-				self._processors.remove(processor)
-			else:
-				frame = processor.process_frame(frame)
-		return frame
+    def __get_frame(self):
+        frame = None
+        if self.ctx.camera:
+            img = self.ctx.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=False)
+            frame = np.array(img.next().array, copy=True)
+        else:
+            ret, frame = self.cap.read()
+        return frame
 
-	def __show_frame(self, frame):
-		# Camera uses "start_preview"
-		if self.ctx.camera is None:
-			cv2.imshow(settings.APP_NAME, frame)
-		else:
-			self.rawCapture.truncate(0)
+    def __process_input(self):
+        key = cv2.waitKey(10)
+        if key == ord('q'):
+            self._is_running = False
+        elif key == ord('s'):
+            processor = CountdownTask(self.ctx)
+            self._processors.append(processor)
+
+            fade = FadeToWhiteTask(self.ctx)
+            self._processors.append(fade)
+
+            snap = SnapShotTask(self.ctx)
+            self._processors.append(snap)
+
+            postfb = PostOnFbTask(self.ctx)
+            self._processors.append(postfb)
+
+
+    def __process_frame(self, frame):
+        if len(self._processors) > 0:
+            processor = self._processors[0]
+            if processor.is_completed():
+                self._processors.remove(processor)
+            else:
+                frame = processor.process_frame(frame)
+        return frame
+
+    def __show_frame(self, frame):
+        # Camera uses "start_preview"
+        if self.ctx.camera is None:
+            cv2.imshow(settings.APP_NAME, frame)
+        else:
+            self.rawCapture.truncate(0)
 
 
 
 
 if __name__ == '__main__':
 
-	selfie = SelfieOMatic()
-	selfie.run()
-	selfie.cleanup()
+    selfie = SelfieOMatic()
+    selfie.run()
+    selfie.cleanup()
