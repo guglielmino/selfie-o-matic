@@ -35,9 +35,9 @@ class CountdownTask(TaskFrameProcessorBase):
                ]
 
 	pil_img = [
-				Image.open('res/images/3.jpg'),
-				Image.open('res/images/2.jpg'),
-				Image.open('res/images/1.jpg')
+				Image.open('res/images/3.png'),
+				Image.open('res/images/2.png'),
+				Image.open('res/images/1.png')
 				]
 
 
