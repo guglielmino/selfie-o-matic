@@ -25,6 +25,8 @@ class CountdownTask(TaskFrameProcessorBase):
 	'''
 	start_time = None
 	_is_completed = False
+	_running_img = None
+	_overlay = None
 
 	counters = [
 	 			cv2.imread('res/images/3.png'),
@@ -33,9 +35,9 @@ class CountdownTask(TaskFrameProcessorBase):
                ]
 
 	pil_img = [
-				Image.open('res/images/3.png'),
-				Image.open('res/images/2.png'),
-				Image.open('res/images/1.png')
+				Image.open('res/images/3.jpg'),
+				Image.open('res/images/2.jpg'),
+				Image.open('res/images/1.jpg')
 				]
 
 
@@ -53,10 +55,17 @@ class CountdownTask(TaskFrameProcessorBase):
 
 		if diff_time < 3:
 			img = self.counters[diff_time]
+			
+
 			if self.device_ctx.camera is None:
 				frame = overlay_image(frame, img)
 			else:
-				overlay_pil_image_pi(self.device_ctx.camera, self.pil_img[diff_time], (640, 480))
+				if self._running_img != self.pil_img[diff_time]:
+					if self._overlay is not None:
+						self.device_ctx.camera.remove_overlay(self._overlay)
+
+					self._running_img = self.pil_img[diff_time]
+					self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self._running_img, (640, 480))
 		else:
 			self._is_completed = True
 

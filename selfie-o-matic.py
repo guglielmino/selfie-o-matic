@@ -58,9 +58,9 @@ class SelfieOMatic(object):
             self.ctx.camera = PiCamera()
             self.ctx.camera.start_preview()
             self.ctx.camera.framerate = 24
-            self.ctx.camera.resolution = (640, 480)
-            self.ctx.camera.preview_fullscreen = False
-            self.ctx.camera.preview_window = (0, 0, 640, 480)
+            #self.ctx.camera.resolution = (640, 480)
+            self.ctx.camera.preview_fullscreen = True
+            #self.ctx.camera.preview_window = (0, 0, 640, 480)
             self.rawCapture = PiRGBArray(self.ctx.camera)
             time.sleep(0.3)
             
@@ -101,7 +101,9 @@ class SelfieOMatic(object):
     def __process_input(self):
         key = cv2.waitKey(10)
         if key == ord('q'):
+            cv2.destroyAllWindows()
             self._is_running = False
+            
         elif key == ord('s'):
             processor = CountdownTask(self.ctx)
             self._processors.append(processor)
