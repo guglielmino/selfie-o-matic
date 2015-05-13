@@ -33,10 +33,7 @@ def overlay_image_old(original, mark):
 	return np.array(np.clip(original + overlay, 0, 255), "uint8")
 
 def overlay_pil_image_pi(camera, mask):
-	pad = Image.new('RGB', (
-    ((img.size[0] + 31) // 32) * 32,
-    ((img.size[1] + 15) // 16) * 16,
-    ))
+	pad = Image.new('RGB', camera.resolution)
 
 	pad.paste(img, (0, 0))
 
