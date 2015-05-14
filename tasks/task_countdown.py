@@ -66,7 +66,7 @@ class CountdownTask(TaskFrameProcessorBase):
 
 					self._running_img = self.pil_img[diff_time]
 					self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self._running_img, (640, 480))
-				else:
+				else is not None:
 					self.device_ctx.camera.remove_overlay(self._overlay)
 		else:
 			self._is_completed = True
