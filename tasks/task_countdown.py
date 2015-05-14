@@ -54,21 +54,21 @@ class CountdownTask(TaskFrameProcessorBase):
 		diff_time = int(round(time.time() - self.start_time))
 
 		if diff_time < 3:
-			img = self.counters[diff_time]
-			
-
 			if self.device_ctx.camera is None:
+				img = self.counters[diff_time]
 				frame = overlay_image(frame, img)
 			else:
 				if self._running_img != self.pil_img[diff_time]:
-					if self._overlay is not None:
-						self.device_ctx.camera.remove_overlay(self._overlay)
+					
 
 					self._running_img = self.pil_img[diff_time]
+
+					if self._overlay is not None:
+						self.device_ctx.camera.remove_overlay(self._overlay)
 					self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self._running_img, (640, 480))
-				elif self._overlay is not None:
-					self.device_ctx.camera.remove_overlay(self._overlay)
 		else:
+			if self._overlay is not None:
+				self.device_ctx.camera.remove_overlay(self._overlay)
 			self._is_completed = True
 
 		return frame
