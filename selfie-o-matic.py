@@ -108,8 +108,8 @@ class SelfieOMatic(object):
             processor = CountdownTask(self.ctx)
             self._processors.append(processor)
 
-            #fade = FadeToWhiteTask(self.ctx)
-            #self._processors.append(fade)
+            fade = FadeToWhiteTask(self.ctx)
+            self._processors.append(fade)
 
             #snap = SnapShotTask(self.ctx)
             #self._processors.append(snap)

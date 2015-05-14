@@ -85,4 +85,7 @@ def create_empty_image(height, width, color):
 	blank_image = np.zeros((height,width,3), np.uint8)
 	blank_image[:] = color
 
-	return blank_image
+
+def create_empty_image_pil(height, width, color):
+	return Image.new('RGB', (height, width), color)
+
