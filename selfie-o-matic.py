@@ -27,8 +27,6 @@ import thread
 import logging
 import settings
 
-from image_lib import overlay_image, fadein, create_empty_image
-
 from tasks.task_countdown import CountdownTask
 from tasks.task_fadetowhite import FadeToWhiteTask
 from tasks.task_snapshot import SnapShotTask
@@ -42,7 +40,7 @@ class DeviceContext(object):
 
     def __init__(self, camera, cap):
         self.camera = camera
-        self.cap = cap
+
 
 class SelfieOMatic(object):
     _is_running = False
@@ -62,7 +60,7 @@ class SelfieOMatic(object):
                             filename='selfie-o-matic.log',level=logging.DEBUG)
 
         self.ctx.camera = None
-        self.cap = None
+
         if GPIO:
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -83,8 +81,8 @@ class SelfieOMatic(object):
             time.sleep(0.3)
             
         except:
-            logging.warning("fallback OpenCV standard")
-            self.cap = cv2.VideoCapture(device)
+            logging.error("picamera init failed")
+
 
 
     def run(self):
@@ -98,8 +96,6 @@ class SelfieOMatic(object):
 
 
     def cleanup(self):
-        if self.cap :
-            self.cap.release()
         if self.ctx.camera:
             self.ctx.camera.stop_preview()
             self.ctx.camera.close()
@@ -107,14 +103,7 @@ class SelfieOMatic(object):
 
 
     def __get_frame(self):
-        frame = None
-        if self.ctx.camera:
-            #img = self.ctx.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=False)
-            #frame = np.array(img.next().array, copy=True)
-            pass
-        else:
-            ret, frame = self.cap.read()
-        return frame
+        return None
 
     def __process_input(self):
         key = cv2.waitKey(10)
@@ -152,7 +141,7 @@ class SelfieOMatic(object):
             if processor.is_completed():
                 self._processors.remove(processor)
             else:
-                frame = processor.process_frame(frame)
+                frame = processor.execute()
         else:
             self._is_snap = False
         return frame

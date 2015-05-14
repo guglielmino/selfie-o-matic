@@ -1,11 +1,10 @@
 # coding=utf-8
 
-# Progetto	: Unknown
+# Progetto	: Self-O-Matic
 # Note		: Image manipulation
 
 
 import cv2
-from cv2 import VideoCapture
 import numpy as np
 import logging
 
@@ -20,82 +19,29 @@ from PIL import Image
 __author__ = "Fabrizio Guglielmino"
 
 
-def overlay_image_old(original, mark):
-	orig_h, orig_w = original.shape[:2]
-	mark_h, mark_w = mark.shape[:2]
-
-	overlay = np.zeros_like(original, "uint16")
-
-	mark_y = (orig_h - mark_h) / 2
-	mark_x = (orig_w - mark_w) / 2
-
-	overlay[mark_y:mark_h+mark_y, mark_x:mark_w+mark_x] = mark
-
-	return np.array(np.clip(original + overlay, 0, 255), "uint8")
-
 def overlay_pil_image_pi(camera, mask):
-	pad = Image.new('RGB', (
-			((camera.resolution[0] + 31) // 32) * 32,
-			((camera.resolution[1] + 15) // 16) * 16,
-			), "#fff")
+    pad = Image.new('RGB', (
+    ((camera.resolution[0] + 31) // 32) * 32,
+    ((camera.resolution[1] + 15) // 16) * 16,
+    ), "#fff")
 
+    x_pos = (camera.resolution[0] - mask.size[0]) // 2
+    y_pos = (camera.resolution[1] - mask.size[1]) // 2
+    pad.paste(mask, (x_pos, y_pos))
 
-	x_pos = (camera.resolution[0] - mask.size[0]) // 2
-	y_pos = (camera.resolution[1] - mask.size[1]) // 2
-	pad.paste(mask, (x_pos, y_pos))
+    return camera.add_overlay(pad.tostring(), size=camera.resolution, layer=3, alpha=255)
 
-	return camera.add_overlay(pad.tostring(), size=camera.resolution, layer=3, alpha=255 )
-	
 def overlay_np_image_pi(camera, mask):
-	camera.add_overlay(np.getbuffer(mask), layer=3, alpha=128)
-
-
-def overlay_image(original, mark):
-	orig_h, orig_w = original.shape[:2]
-	# Region of interest
-	mark_h, mark_w,channels = mark.shape
-
-	mark_y = (orig_h - mark_h) / 2
-	mark_x = (orig_w - mark_w) / 2
-
-	#roi = original[0:mark_h, 0:mark_w ]
-	roi = original[mark_y:mark_h+mark_y, mark_x:mark_w+mark_x]
-
-	img2gray = cv2.cvtColor(mark,cv2.COLOR_BGR2GRAY)
-	ret, mask = cv2.threshold(img2gray, 10, 255, cv2.THRESH_BINARY)
-	mask_inv = cv2.bitwise_not(mask)
-	# Black della ROI
-	img1_bg = cv2.bitwise_and(roi,roi,mask = mask_inv)
-	# Estrazione della parte interessare
-	img2_fg = cv2.bitwise_and(mark,mark,mask = mask)
-
-	# Creazione dell'immagine da sovraimporre
-	dst = cv2.add(img1_bg,img2_fg)
-
-	original[mark_y:mark_h+mark_y, mark_x:mark_w+mark_x] = dst
-
-	return original
-
-
-def fadein(img1, img2, fade_value): 
-	fadein = fade_value/10.0
-	return cv2.addWeighted(img1, fadein, img2, fadein, 0)
-
-
-def create_empty_image(height, width, color):
-	blank_image = np.zeros((height,width,3), np.uint8)
-	blank_image[:] = color
-
+    camera.add_overlay(np.getbuffer(mask), layer=3, alpha=128)
 
 def create_empty_image_pil(height, width, color):
-	return Image.new('RGB', (height, width), color)
+    return Image.new('RGB', (height, width), color)
 
 def watermark_image(image_original, watermark_image):
+    if image_original.mode != 'RGBA':
+        image_original = image_original.convert('RGBA')
 
-	if image_original.mode != 'RGBA':
-		image_original = image_original.convert('RGBA')
+    layer = Image.new('RGBA', image_original.size, (0, 0, 0, 0))
+    layer.paste(watermark_image, (0, 0))
 
-	layer = Image.new('RGBA', image_original.size, (0,0,0,0))
-	layer.paste(watermark_image, (0,0))
-	
-	return Image.composite(layer, image_original, layer)
+    return Image.composite(layer, image_original, layer)
