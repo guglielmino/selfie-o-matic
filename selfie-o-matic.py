@@ -111,8 +111,8 @@ class SelfieOMatic(object):
             fade = FadeToWhiteTask(self.ctx)
             self._processors.append(fade)
 
-            #snap = SnapShotTask(self.ctx)
-            #self._processors.append(snap)
+            snap = SnapShotTask(self.ctx)
+            self._processors.append(snap)
 
             #postfb = PostOnFbTask(self.ctx)
             #self._processors.append(postfb)
@@ -129,7 +129,8 @@ class SelfieOMatic(object):
 
     def __show_frame(self, frame):
         # Camera uses "start_preview"
-        if self.ctx.camera is None:
+        #if self.ctx.camera is None:
+        if not frame is None:
             cv2.imshow(settings.APP_NAME, frame)
         else:
             self.rawCapture.truncate(0)
