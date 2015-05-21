@@ -33,7 +33,9 @@ class SnapShotTask(TaskFrameProcessorBase):
 		if self.still_frame is None:
 			self.still_frame = frame
 		if self.start_time is None:
+			self.device_ctx.camera.stop_preview()
 			self.start_time = time.time()
+
 
 
 		diff_time = int(round(time.time() - self.start_time))
@@ -52,4 +54,5 @@ class SnapShotTask(TaskFrameProcessorBase):
 		image_file_name = '/tmp/snapshot{0}.jpg'.format(int(time.time()))
 		res = cv2.imwrite(image_file_name, frame)
 		self._is_completed = True
+		self.device_ctx.camera.start_preview()
 
