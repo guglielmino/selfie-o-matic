@@ -1,5 +1,6 @@
 import sys, os
 import time
+import io
 
 try:
     from picamera.array import PiRGBArray
