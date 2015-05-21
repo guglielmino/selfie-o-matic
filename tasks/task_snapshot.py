@@ -37,21 +37,22 @@ class SnapShotTask(TaskFrameProcessorBase):
 	def process_frame(self, frame):
 		if self.still_frame is None:
 			stream = io.BytesIO()
-			camera.capture(stream, format='jpeg')
+			self.device_ctx.camera.capture(stream, format='jpeg')
 			self.still_frame = Image.open(stream)
+			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame)                                                
 			self.__save_image(self.still_frame)
+			
+
 		if self.start_time is None:
 			self.start_time = time.time()
 
 
-
 		diff_time = int(round(time.time() - self.start_time))
-		print "diff_time {0}".format(diff_time)
-		if diff_time < self.STILL_FRAME_SECONDS:
-			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame, (640, 480))
-		else:
+	
+		if diff_time >= self.STILL_FRAME_SECONDS:
 			if self._overlay is not None:
 				self.device_ctx.camera.remove_overlay(self._overlay)
+			self._is_completed = True
 
 		return frame
 
@@ -60,7 +61,7 @@ class SnapShotTask(TaskFrameProcessorBase):
 
 	def __save_image(self, frame):
 		image_file_name = '/tmp/snapshot{0}.jpg'.format(int(time.time()))
-		im.save(image_file_name, "JPEG")
-		self._is_completed = True
+		frame.save(image_file_name, "JPEG")
+		
 
 

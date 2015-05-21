@@ -53,7 +53,7 @@ class FadeToWhiteTask(TaskFrameProcessorBase):
 				self._is_completed = True
 		else:
 			if self._overlay is None:
-				self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.white_image, self.white_image.size)
+				self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.white_image)
 				self._overlay.alpha = 0
 			
 			if self._overlay.alpha + self._fade_step < 255:
