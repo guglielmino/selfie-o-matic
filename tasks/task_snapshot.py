@@ -2,7 +2,7 @@ import sys, os
 import time
 import io
 from PIL import Image
-
+import threading
 
 try:
     from picamera.array import PiRGBArray
@@ -33,15 +33,16 @@ class SnapShotTask(TaskFrameProcessorBase):
 	def __init__(self, ctx):
 		TaskFrameProcessorBase.__init__(self, ctx)
 		self._is_completed = False
+		
 	
 	def process_frame(self, frame):
-		if self.still_frame is None:
+		if self.still_frame is None:	        
 			stream = io.BytesIO()
-			self.device_ctx.camera.capture(stream, format='jpeg')
+			self.device_ctx.camera.capture(stream, use_video_port=True, format='jpeg')
 			self.still_frame = Image.open(stream)
-			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame)                                                
+			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame)   
+                
 			self.__save_image(self.still_frame)
-			
 
 		if self.start_time is None:
 			self.start_time = time.time()

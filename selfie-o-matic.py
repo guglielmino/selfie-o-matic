@@ -58,9 +58,8 @@ class SelfieOMatic(object):
             self.ctx.camera = PiCamera()
             
             self.ctx.camera.framerate = 24
-            #self.ctx.camera.resolution = (640, 480)
             self.ctx.camera.preview_fullscreen = True
-            #self.ctx.camera.preview_window = (0, 0, 640, 480)
+                                                                         
             self.ctx.camera.start_preview()
             self.rawCapture = PiRGBArray(self.ctx.camera)
             time.sleep(0.3)
