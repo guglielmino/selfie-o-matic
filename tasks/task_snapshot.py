@@ -21,7 +21,7 @@ from image_lib import overlay_image, fadein, create_empty_image
 from task_common import TaskFrameProcessorBase
 from image_lib import overlay_image, overlay_np_image_pi, overlay_pil_image_pi
 
-from ..fb import *
+from fb import *
 
 class SnapShotTask(TaskFrameProcessorBase):
 	'''
