@@ -39,7 +39,8 @@ class PostOnFbTask(TaskFrameProcessorBase):
 
 		diff_time = int(round(time.time() - self.start_time))
 		if diff_time < self.WAIT_SECONDS:
-			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.like_image)  
+			if not self._overlay:
+				self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.like_image)  
 		else:
 			if self._overlay:
 				self.device_ctx.camera.remove_overlay(self._overlay)
