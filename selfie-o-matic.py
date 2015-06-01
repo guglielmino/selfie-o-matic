@@ -130,8 +130,8 @@ class SelfieOMatic(object):
             snap = SnapShotTask(self.ctx)
             self._processors.append(snap)
 
-            #postfb = PostOnFbTask(self.ctx)
-            #self._processors.append(postfb)
+            postfb = PostOnFbTask(self.ctx)
+            self._processors.append(postfb)
 
 
     def __process_frame(self, frame):
