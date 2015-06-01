@@ -67,9 +67,12 @@ class SnapShotTask(TaskFrameProcessorBase):
 		frame.save(image_file_name, "JPEG")
 
 		# Post on FB
-		status = post_on_album(image_file_name, settings.FB_ALBUM_ID)
-		if 'post_id' in status:
-			os.remove(image_file_name)
+		try:
+			status = post_on_album(image_file_name, settings.FB_ALBUM_ID)
+			if 'post_id' in status:
+				os.remove(image_file_name)
+		except:
+			print "Post on fb error!"
 
 		
 
