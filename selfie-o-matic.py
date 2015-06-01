@@ -57,10 +57,11 @@ class SelfieOMatic(object):
 
         self.ctx.camera = None
         self.cap = None
+        if GPIO:
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         try:
-            if GPIO:
-                GPIO.setmode(GPIO.BCM)
-                GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+           
 
             cv2.namedWindow("MainWin")
 
