@@ -1,6 +1,8 @@
 import sys, os
 import time
 import io
+import traceback
+
 from PIL import Image
 import threading
 
@@ -17,9 +19,8 @@ import numpy as np
 import logging
 import settings
 
-from image_lib import overlay_image, fadein, create_empty_image
 from task_common import TaskFrameProcessorBase
-from image_lib import overlay_image, overlay_np_image_pi, overlay_pil_image_pi
+from image_lib import  overlay_pil_image_pi, watermark_image
 
 from fb import *
 
@@ -64,6 +65,21 @@ class SnapShotTask(TaskFrameProcessorBase):
 
 	def __save_image(self, frame):
 		image_file_name = '/tmp/snapshot{0}.jpg'.format(int(time.time()))
+
+		# Gestione HFLIP
+		if settings.HFLIP_IMAGE:
+			logging.debug("-- FLIPPING IMAGE")
+			frame = frame.transpose(Image.FLIP_LEFT_RIGHT)
+
+		# Watermark della foto
+		if settings.WATERMARK_IMAGE and settings.WATERMARK_IMAGE.strip():
+			logging.debug("-- WATERMARKING IMAGE")
+			try:
+				frame = watermark_image(frame, Image.open(settings.WATERMARK_IMAGE))
+			except:
+				logging.error(traceback.format_exc())
+
+
 		frame.save(image_file_name, "JPEG")
 
 		# Post on FB
@@ -71,8 +87,10 @@ class SnapShotTask(TaskFrameProcessorBase):
 			status = post_on_album(image_file_name, settings.FB_ALBUM_ID)
 			if 'post_id' in status:
 				os.remove(image_file_name)
+			else:
+				logging.error(str(status))
 		except:
-			print "Post on fb error!"
+			logging.error(traceback.format_exc())
 
 		
 

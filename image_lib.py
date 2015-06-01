@@ -7,6 +7,7 @@
 import cv2
 from cv2 import VideoCapture
 import numpy as np
+import logging
 
 try:
     from picamera.array import PiRGBArray
@@ -89,3 +90,12 @@ def create_empty_image(height, width, color):
 def create_empty_image_pil(height, width, color):
 	return Image.new('RGB', (height, width), color)
 
+def watermark_image(image_original, watermark_image):
+
+	if image_original.mode != 'RGBA':
+		image_original = image_original.convert('RGBA')
+
+	layer = Image.new('RGBA', image_original.size, (0,0,0,0))
+	layer.paste(watermark_image, (0,0))
+	
+	return Image.composite(layer, image_original, layer)

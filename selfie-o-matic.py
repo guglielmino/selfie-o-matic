@@ -55,17 +55,21 @@ class SelfieOMatic(object):
 
     def __init__(self, device=0):
 
+        logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                            datefmt='%m-%d %H:%M',
+                            filename='selfie-o-matic.log',level=logging.DEBUG)
+
         self.ctx.camera = None
         self.cap = None
         if GPIO:
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         try:
-           
-
             cv2.namedWindow("MainWin")
 
             self.ctx.camera = PiCamera()
+            if settings.HFLIP_IMAGE:
+                self.ctx.camera.hflip = True
             
             self.ctx.camera.framerate = 24
             self.ctx.camera.preview_fullscreen = True
@@ -75,7 +79,7 @@ class SelfieOMatic(object):
             time.sleep(0.3)
             
         except:
-            print "fallback OpenCV standard"
+            logging.warning("fallback OpenCV standard")
             self.cap = cv2.VideoCapture(device)
 
 
