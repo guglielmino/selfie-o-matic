@@ -10,18 +10,20 @@ except:
 import cv2
 from cv2 import VideoCapture
 import numpy as np
+from PIL import Image
 
 import logging
 import settings
 
-from image_lib import overlay_image, fadein, create_empty_image
+from image_lib import fadein, create_empty_image, overlay_pil_image_pi
 from task_common import TaskFrameProcessorBase
 
 class PostOnFbTask(TaskFrameProcessorBase):
 	WAIT_SECONDS = 3
 	_is_completed = False
 	start_time = None
-	like_image = cv2.imread('res/images/fb_like.png')
+	like_image = Image.open('res/images/fb_like.png')
+	_overlay = None
 	
 	def __init__(self, ctx):
 		TaskFrameProcessorBase.__init__(self, ctx)
@@ -34,8 +36,9 @@ class PostOnFbTask(TaskFrameProcessorBase):
 
 		diff_time = int(round(time.time() - self.start_time))
 		if diff_time < self.WAIT_SECONDS:
-			frame = overlay_image(frame, self.like_image)
+			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.like_image)  
 		else:
+			self.device_ctx.camera.remove_overlay(self._overlay)
 			self._is_completed = True
 
 		return frame

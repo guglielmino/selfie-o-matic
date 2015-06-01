@@ -34,8 +34,9 @@ def get_api(cfg):
   page_access_token = None
 
   for page in resp['data']:
-    if page['name'] == 'Petaboo':
+    if page['id'] == cfg['page_id']:
       page_access_token = page['access_token']
+      print "page access token {0} ({1})".format(page_access_token, page)
 
   graph = facebook.GraphAPI(page_access_token)
   return graph

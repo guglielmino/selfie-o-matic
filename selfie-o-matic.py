@@ -12,6 +12,11 @@ try:
 except:
     pass
 
+try:
+    import RPi.GPIO as GPIO
+except:
+    pass
+
 import cv2
 from cv2 import VideoCapture
 import numpy as np
@@ -53,6 +58,10 @@ class SelfieOMatic(object):
         self.ctx.camera = None
         self.cap = None
         try:
+            if GPIO:
+                GPIO.setmode(GPIO.BCM)
+                GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
             cv2.namedWindow("MainWin")
 
             self.ctx.camera = PiCamera()
@@ -100,6 +109,13 @@ class SelfieOMatic(object):
 
     def __process_input(self):
         key = cv2.waitKey(10)
+
+        if GPIO:
+            input_state = GPIO.input(18)
+            if input_state == False:
+                # Remap 
+                key = ord('s')
+
         if key == ord('q'):
             cv2.destroyAllWindows()
             self._is_running = False

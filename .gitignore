@@ -55,3 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Setting non sul repo
+settings.py[cod]
+test.py[cod]
+
