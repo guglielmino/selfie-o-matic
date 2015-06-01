@@ -27,7 +27,7 @@ class SnapShotTask(TaskFrameProcessorBase):
 	'''
 	Salvataggio della foto
 	'''
-	STILL_FRAME_SECONDS = 3
+	STILL_FRAME_SECONDS = 2
 	still_frame = None
 	start_time = None
 	_overlay = None
