@@ -21,6 +21,8 @@ from image_lib import overlay_image, fadein, create_empty_image
 from task_common import TaskFrameProcessorBase
 from image_lib import overlay_image, overlay_np_image_pi, overlay_pil_image_pi
 
+from ..fb import *
+
 class SnapShotTask(TaskFrameProcessorBase):
 	'''
 	Salvataggio della foto
@@ -63,6 +65,12 @@ class SnapShotTask(TaskFrameProcessorBase):
 	def __save_image(self, frame):
 		image_file_name = '/tmp/snapshot{0}.jpg'.format(int(time.time()))
 		frame.save(image_file_name, "JPEG")
+
+		# Post on FB
+		status = post_on_album(image_file_name, settings.FB_ALBUM_ID)
+		if 'post_id' in status:
+			os.remove(image_file_name)
+
 		
 
 

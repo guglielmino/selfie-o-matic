@@ -18,6 +18,9 @@ import settings
 from image_lib import fadein, create_empty_image, overlay_pil_image_pi
 from task_common import TaskFrameProcessorBase
 
+'''
+Show FB Like image (real post on fb is made by snapshop task)
+'''
 class PostOnFbTask(TaskFrameProcessorBase):
 	WAIT_SECONDS = 3
 	_is_completed = False
@@ -38,7 +41,8 @@ class PostOnFbTask(TaskFrameProcessorBase):
 		if diff_time < self.WAIT_SECONDS:
 			self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.like_image)  
 		else:
-			self.device_ctx.camera.remove_overlay(self._overlay)
+			if self._overlay:
+				self.device_ctx.camera.remove_overlay(self._overlay)
 			self._is_completed = True
 
 		return frame
