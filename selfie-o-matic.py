@@ -23,7 +23,6 @@ import numpy as np
 
 import thread
 
-from fb import post_image
 
 import logging
 import settings
@@ -47,6 +46,9 @@ class DeviceContext(object):
 
 class SelfieOMatic(object):
     _is_running = False
+    # True quando sta processando una foto
+    _is_snap = False
+
     # TODO: Coda di frame processors
     _processors = []
     rawCapture = None
@@ -73,6 +75,7 @@ class SelfieOMatic(object):
             
             self.ctx.camera.framerate = 24
             self.ctx.camera.preview_fullscreen = True
+            self.ctx.camera.awb_mode = 'sunlight'
                                                                          
             self.ctx.camera.start_preview()
             self.rawCapture = PiRGBArray(self.ctx.camera)
@@ -126,17 +129,20 @@ class SelfieOMatic(object):
             self._is_running = False
             
         elif key == ord('s'):
-            processor = CountdownTask(self.ctx)
-            self._processors.append(processor)
+            if not self._is_snap:
+                self._is_snap = True
 
-            fade = FadeToWhiteTask(self.ctx)
-            self._processors.append(fade)
+                processor = CountdownTask(self.ctx)
+                self._processors.append(processor)
 
-            snap = SnapShotTask(self.ctx)
-            self._processors.append(snap)
+                fade = FadeToWhiteTask(self.ctx)
+                self._processors.append(fade)
 
-            postfb = PostOnFbTask(self.ctx)
-            self._processors.append(postfb)
+                snap = SnapShotTask(self.ctx)
+                self._processors.append(snap)
+
+                postfb = PostOnFbTask(self.ctx)
+                self._processors.append(postfb)
 
 
     def __process_frame(self, frame):
@@ -146,6 +152,8 @@ class SelfieOMatic(object):
                 self._processors.remove(processor)
             else:
                 frame = processor.process_frame(frame)
+        else:
+            self._is_snap = False
         return frame
 
     def __show_frame(self, frame):

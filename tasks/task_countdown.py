@@ -46,6 +46,7 @@ class CountdownTask(TaskFrameProcessorBase):
 		TaskFrameProcessorBase.__init__(self, ctx)
 		self._is_completed = False
 
+	
 
 	def process_frame(self, frame):
 		if self.start_time is None:
