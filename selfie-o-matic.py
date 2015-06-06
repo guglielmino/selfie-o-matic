@@ -149,11 +149,12 @@ class SelfieOMatic(object):
         return frame
 
     def __show_frame(self, frame):
+        pass
         # Camera uses "start_preview"
-        if self.ctx.camera is None:
-            cv2.imshow(settings.APP_NAME, frame)
-        else:
-            self.rawCapture.truncate(0)
+        #if self.ctx.camera is None:
+        #    cv2.imshow(settings.APP_NAME, frame)
+        #else:
+        #    self.rawCapture.truncate(0)
 
 
 
