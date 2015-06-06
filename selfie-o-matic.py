@@ -76,6 +76,7 @@ class SelfieOMatic(object):
             self.ctx.camera.framerate = 24
             self.ctx.camera.preview_fullscreen = True
             self.ctx.camera.awb_mode = 'sunlight'
+            self.ctx.camera.exposure_mode = 'snow'
                                                                          
             self.ctx.camera.start_preview()
             self.rawCapture = PiRGBArray(self.ctx.camera)
