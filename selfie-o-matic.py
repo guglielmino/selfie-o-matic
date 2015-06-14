@@ -18,25 +18,29 @@ except:
     pass
 
 import cv2
-from cv2 import VideoCapture
-import numpy as np
-
-import thread
-
 
 import logging
 import settings
 
 from tasks.task_countdown import CountdownTask
 from tasks.task_fadetowhite import FadeToWhiteTask
+from tasks.task_stillframe import StillFrameTask
 from tasks.task_snapshot import SnapShotTask
 from tasks.task_postonfb import PostOnFbTask
+from tasks.task_pushetta import PushettaTask
+
+from task_manager import TaskManager
 
 __author__ = "Fabrizio Guglielmino"
+
+APP_NAME="Self-O-Matic"
+VERSION="0.1"
 
 class DeviceContext(object):
     camera = None
     cap = None
+    custom_data = {}
+
 
     def __init__(self, camera, cap):
         self.camera = camera
@@ -49,6 +53,7 @@ class SelfieOMatic(object):
 
     # TODO: Coda di frame processors
     _processors = []
+    _task_manager = TaskManager()
     rawCapture = None
     ctx = DeviceContext(None, None)
 
@@ -88,10 +93,8 @@ class SelfieOMatic(object):
     def run(self):
         self._is_running = True
         while self._is_running:
-            frame = self.__get_frame()
             self.__process_input()
-            frame = self.__process_frame(frame)
-            self.__show_frame(frame)
+            self.__process_tasks()
             time.sleep(0.05)
 
 
@@ -101,9 +104,6 @@ class SelfieOMatic(object):
             self.ctx.camera.close()
         cv2.destroyAllWindows()
 
-
-    def __get_frame(self):
-        return None
 
     def __process_input(self):
         key = cv2.waitKey(10)
@@ -122,40 +122,30 @@ class SelfieOMatic(object):
             if not self._is_snap:
                 self._is_snap = True
 
-                processor = CountdownTask(self.ctx)
-                self._processors.append(processor)
-
+                # Snapshot workflow
+                countdown = CountdownTask(self.ctx)
                 fade = FadeToWhiteTask(self.ctx)
-                self._processors.append(fade)
-
+                still = StillFrameTask(self.ctx)
                 snap = SnapShotTask(self.ctx)
-                self._processors.append(snap)
-
                 postfb = PostOnFbTask(self.ctx)
-                self._processors.append(postfb)
 
+                # Async snapshot, image processing ad post on fb
+                still.set_on_completed(self.__after_fade_event)
+                
+                self._task_manager.add_task(countdown)                
+                self._task_manager.add_task(fade)
+                self._task_manager.add_task(still)
+                #self._task_manager.add_task(snap)
+                self._task_manager.add_task(postfb)
 
-    def __process_frame(self, frame):
-        if len(self._processors) > 0:
-            processor = self._processors[0]
-            if processor.is_completed():
-                self._processors.remove(processor)
-            else:
-                frame = processor.execute()
-        else:
-            self._is_snap = False
-        return frame
+    def __after_fade_event(self, taskmanager):
+        push = PushettaTask(self.ctx)
+        taskmanager.add_async_task(push)
+        snap = SnapShotTask(self.ctx)
+        taskmanager.add_async_task(snap)
 
-    def __show_frame(self, frame):
-        pass
-        # Camera uses "start_preview"
-        #if self.ctx.camera is None:
-        #    cv2.imshow(settings.APP_NAME, frame)
-        #else:
-        #    self.rawCapture.truncate(0)
-
-
-
+    def __process_tasks(self):
+        self._is_snap  = self._task_manager.cycle()
 
 if __name__ == '__main__':
 

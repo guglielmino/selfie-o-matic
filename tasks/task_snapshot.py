@@ -25,10 +25,6 @@ class SnapShotTask(TaskBase):
     '''
     Salvataggio della foto
     '''
-    STILL_FRAME_SECONDS = 2
-    still_frame = None
-    start_time = None
-    _overlay = None
 
     def __init__(self, ctx):
         TaskBase.__init__(self, ctx)
@@ -36,23 +32,18 @@ class SnapShotTask(TaskBase):
 
 
     def execute(self):
-        if self.still_frame is None:
+        picture = None
+
+        if "STILL_IMAGE" in self.device_ctx.custom_data:
+            picture = self.device_ctx.custom_data["STILL_IMAGE"]
+        else:
             stream = io.BytesIO()
             self.device_ctx.camera.capture(stream, use_video_port=True, format='jpeg')
-            self.still_frame = Image.open(stream)
-            self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame)
+            picture = Image.open(stream)
 
-            self.__save_image(self.still_frame)
+        self.__save_image(picture)
 
-        if self.start_time is None:
-            self.start_time = time.time()
-
-        diff_time = int(round(time.time() - self.start_time))
-
-        if diff_time >= self.STILL_FRAME_SECONDS:
-            if self._overlay is not None:
-                self.device_ctx.camera.remove_overlay(self._overlay)
-            self._is_completed = True
+        self._is_completed = True
 
 
     def is_completed(self):
@@ -85,6 +76,8 @@ class SnapShotTask(TaskBase):
                 logging.error(str(status))
         except:
             logging.error(traceback.format_exc())
+
+
 
 		
 

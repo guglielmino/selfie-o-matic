@@ -47,3 +47,4 @@ class PostOnFbTask(TaskBase):
 
     def is_completed(self):
         return self._is_completed
+
