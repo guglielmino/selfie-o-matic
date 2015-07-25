@@ -1,5 +1,7 @@
 
 import unittest
+import sys
+import os
 
 from services.client.ws_client import WsClient
 from config_manager import ConfigManager
@@ -7,23 +9,32 @@ from config_manager import ConfigManager
 
 class TestConfigManager(unittest.TestCase):
 
+	__configManager = None
+
+	def setUp(self):
+		cfg_path = os.path.dirname(os.path.abspath(__file__))
+		self.__configManager = ConfigManager(cfg_path + '/cfg/test.cfg')
+
 	def test_read_setting(self):
-		sett = ConfigManager()
-		
-		res = sett.getValue("FB_ALBUM_ID")
-		self.assertTrue(res)
+		res = self.__configManager.getValue("FB_ALBUM_ID")
+		self.assertIsNotNone(res)
 
 	def test_write_setting(self):
-		sett = ConfigManager()
-		res = sett.setValue("FB_ALBUM_ID", "123")
-		self.assertEqual(sett.getValue("FB_ALBUM_ID"), "123")
+		res = self.__configManager.setValue("FB_ALBUM_ID", "123")
+		self.assertEqual(self.__configManager.getValue("FB_ALBUM_ID"), "123")
+
+	def test_write_many_setting(self):
+		res = self.__configManager.setValue("ATTRIB_ONE", "aaa")
+		self.assertEqual(self.__configManager.getValue("ATTRIB_ONE"), "aaa")
+		res = self.__configManager.setValue("ATTRIB_TWO", "bbb")
+		self.assertEqual(self.__configManager.getValue("ATTRIB_TWO"), "bbb")
 
 
-# class TestWsClient(unittest.TestCase):
-# 	def test_ws_client(self):
-# 		client = WsClient()
-# 		client.register_myself("123")
-# 		self.assertTrue(True)
+class TestWsClient(unittest.TestCase):
+	def test_ws_client(self):
+		client = WsClient("http://admin.self-o-matic.com")
+		res = client.register_myself("123", "UNIT TEST MACHINE")
+		self.assertTrue(res)
 
 
 # class TestFB(unittest.TestCase):	

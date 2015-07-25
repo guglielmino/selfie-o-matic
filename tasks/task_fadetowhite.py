@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 import time
 
 try:
@@ -8,7 +9,6 @@ except:
     pass
 
 import logging
-import settings
 
 from image_lib import create_empty_image_pil, overlay_pil_image_pi
 from task_common import TaskBase
@@ -21,19 +21,19 @@ class FadeToWhiteTask(TaskBase):
     _overlay = None
     _fade_step = 50
 
-    def __init__(self, ctx):
-        TaskBase.__init__(self, ctx)
+    def __init__(self, ctx, configManager):
+        TaskBase.__init__(self, ctx, configManager)
         self._is_completed = False
-
-
 
     def execute(self):
         if self.white_image is None:
             height, width = self.device_ctx.camera.resolution
-            self.white_image = create_empty_image_pil(height, width, (255, 255, 255))
+            self.white_image = create_empty_image_pil(
+                height, width, (255, 255, 255))
 
         if self._overlay is None:
-            self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.white_image)
+            self._overlay = overlay_pil_image_pi(
+                self.device_ctx.camera, self.white_image)
             self._overlay.alpha = 0
 
         if self._overlay.alpha + self._fade_step < 255:
@@ -44,4 +44,3 @@ class FadeToWhiteTask(TaskBase):
 
     def is_completed(self):
         return self._is_completed
-

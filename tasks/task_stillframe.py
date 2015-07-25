@@ -13,7 +13,6 @@ except:
     pass
 
 import logging
-import settings
 
 from task_common import TaskBase
 from image_lib import overlay_pil_image_pi, watermark_image
@@ -22,6 +21,7 @@ from fb import *
 
 
 class StillFrameTask(TaskBase):
+
     '''
     Salvataggio della foto
     '''
@@ -30,17 +30,18 @@ class StillFrameTask(TaskBase):
     start_time = None
     _overlay = None
 
-    def __init__(self, ctx):
-        TaskBase.__init__(self, ctx)
+    def __init__(self, ctx, configManager):
+        TaskBase.__init__(self, ctx, configManager)
         self._is_completed = False
-
 
     def execute(self):
         if self.still_frame is None:
             stream = io.BytesIO()
-            self.device_ctx.camera.capture(stream, use_video_port=True, format='jpeg')
+            self.device_ctx.camera.capture(
+                stream, use_video_port=True, format='jpeg')
             self.still_frame = Image.open(stream)
-            self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame)
+            self._overlay = overlay_pil_image_pi(
+                self.device_ctx.camera, self.still_frame)
             self.device_ctx.custom_data["STILL_IMAGE"] = self.still_frame
 
         if self.start_time is None:
@@ -53,11 +54,5 @@ class StillFrameTask(TaskBase):
                 self.device_ctx.camera.remove_overlay(self._overlay)
             self._is_completed = True
 
-
     def is_completed(self):
         return self._is_completed
-
-
-		
-
-

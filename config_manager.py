@@ -1,38 +1,40 @@
 import sys
+import os
+import json
 
-try:
-	import settings
-except:
-	print "ERROR -- You need `settings.py` with application settings (create if if doesn't exists)"
-	raise
-
-FB_APP_ID="841335565958226"
 
 class ConfigManager(object):
 
-	def getValue(self, config_key):
-		mod_dic = self.__getModuleDict()
-		res = None
+    __config_data = dict()
 
-		if mod_dic and config_key in mod_dic:
-			res = mod_dic[config_key]
+    def __init__(self, configFilePath):
+        self.__config_file = configFilePath
+        configDir = os.path.dirname(configFilePath)
 
-		return res
+        if not os.path.exists(configDir):
+            os.makedirs(configDir)
 
-	def setValue(self, config_key, value):
-		res = False
+        if os.path.exists(self.__config_file):
+            with open(self.__config_file) as data_file:
+                self.__config_data = json.load(data_file)
 
-		mod_dic = self.__getModuleDict()
-		if mod_dic:
-			mod_dic[config_key] = value
-			res = True
+    def getValue(self, config_key):
+        res = None
 
-		return res
+        if config_key in self.__config_data:
+            res = self.__config_data[config_key]
 
+        return res
 
+    def setValue(self, config_key, value):
+        self.__config_data[config_key] = value
+        return self.__saveConfigData()
 
+    def getValues(self):
+        return self.__config_data.keys()
 
-	def __getModuleDict(self):
-		#module = sys.modules[self.__module__]
-		module = sys.modules['settings']
-		return module.__dict__
+    def __saveConfigData(self):
+        res = False
+        with open(self.__config_file, 'w') as fp:
+            json.dump(self.__config_data, fp)
+            res = True

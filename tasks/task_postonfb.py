@@ -9,7 +9,6 @@ except:
 from PIL import Image
 
 import logging
-import settings
 
 from image_lib import overlay_pil_image_pi
 from task_common import TaskBase
@@ -26,10 +25,9 @@ class PostOnFbTask(TaskBase):
     like_image = Image.open('res/images/fb_like.png')
     _overlay = None
 
-    def __init__(self, ctx):
-        TaskBase.__init__(self, ctx)
+    def __init__(self, ctx, configManager):
+        TaskBase.__init__(self, ctx, configManager)
         self._is_completed = False
-
 
     def execute(self):
         if self.start_time is None:
@@ -38,13 +36,12 @@ class PostOnFbTask(TaskBase):
         diff_time = int(round(time.time() - self.start_time))
         if diff_time < self.WAIT_SECONDS:
             if not self._overlay:
-                self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.like_image)
+                self._overlay = overlay_pil_image_pi(
+                    self.device_ctx.camera, self.like_image)
         else:
             if self._overlay:
                 self.device_ctx.camera.remove_overlay(self._overlay)
             self._is_completed = True
 
-
     def is_completed(self):
         return self._is_completed
-

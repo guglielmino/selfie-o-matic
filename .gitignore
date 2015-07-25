@@ -60,3 +60,7 @@ target/
 settings.py[cod]
 test.py[cod]
 
+node_modules/
+cfg/
+settings.py
+

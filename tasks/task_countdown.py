@@ -8,7 +8,6 @@ except:
 
 
 import logging
-import settings
 from PIL import Image
 
 from image_lib import overlay_pil_image_pi
@@ -16,6 +15,7 @@ from task_common import TaskBase
 
 
 class CountdownTask(TaskBase):
+
     '''
     Task for countdown overlay
     '''
@@ -30,11 +30,9 @@ class CountdownTask(TaskBase):
         Image.open('res/images/1.png')
     ]
 
-
-    def __init__(self, ctx):
-        TaskBase.__init__(self, ctx)
+    def __init__(self, ctx, configManager):
+        TaskBase.__init__(self, ctx, configManager)
         self._is_completed = False
-
 
     def execute(self):
         if self.start_time is None:
@@ -49,13 +47,12 @@ class CountdownTask(TaskBase):
 
                     if self._overlay is not None:
                         self.device_ctx.camera.remove_overlay(self._overlay)
-                    self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self._running_img)
+                    self._overlay = overlay_pil_image_pi(
+                        self.device_ctx.camera, self._running_img)
         else:
             if self._overlay is not None:
                 self.device_ctx.camera.remove_overlay(self._overlay)
             self._is_completed = True
 
-
     def is_completed(self):
         return self._is_completed
-

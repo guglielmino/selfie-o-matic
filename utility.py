@@ -3,6 +3,7 @@
 # Progetto	: Selfie-O-Matic
 # Scope		: Various utilities for the project
 
+import socket 
 
 def getserial():
 	# Extract serial from cpuinfo file
@@ -11,10 +12,12 @@ def getserial():
 		f = open('/proc/cpuinfo','r')
 		for line in f:
 			if line[0:6]=='Serial':
-	    		cpuserial = line[10:26]
-	
+				cpuserial = line[10:26]
 		f.close()
 	except:
 		cpuserial = "ERROR000000000"
 
 	return cpuserial
+
+def getname():
+	return socket.gethostname()
