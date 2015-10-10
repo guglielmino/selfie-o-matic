@@ -1,0 +1,9 @@
+Version 0.1
+-----------
+
+First version deployed on some machines
+
+Version 0.2
+-----------
+
+Added recovery of photos not posted in realtime shots (ie miss WiFi connectivity, ... )
