@@ -20,10 +20,11 @@ import logging
 import settings
 
 from fb import *
+from consts import *
 
 
 class UploadLostTask(TaskBase):
-    files_pattern = '/tmp/snapshot*.jpg'
+    files_pattern = LOCAL_IMAGE_PATTERN.format('*')
     # I file più vecchi di 5 min sono scatti che non sono stati uploatati
     age_in_seconds = 300
 

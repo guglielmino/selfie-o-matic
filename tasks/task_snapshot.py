@@ -18,6 +18,8 @@ import settings
 from task_common import TaskBase
 from image_lib import overlay_pil_image_pi, watermark_image
 
+from consts import *
+
 from fb import *
 
 
@@ -30,7 +32,6 @@ class SnapShotTask(TaskBase):
         TaskBase.__init__(self, ctx)
         self._is_completed = False
 
-
     def execute(self):
         picture = None
 
@@ -38,19 +39,19 @@ class SnapShotTask(TaskBase):
             picture = self.device_ctx.custom_data["STILL_IMAGE"]
         else:
             stream = io.BytesIO()
-            self.device_ctx.camera.capture(stream, use_video_port=True, format='jpeg')
+            self.device_ctx.camera.capture(
+                stream, use_video_port=True, format='jpeg')
             picture = Image.open(stream)
 
         self.__save_image(picture)
 
         self._is_completed = True
 
-
     def is_completed(self):
         return self._is_completed
 
     def __save_image(self, frame):
-        image_file_name = '/tmp/snapshot{0}.jpg'.format(int(time.time()))
+        image_file_name = LOCAL_IMAGE_PATTERN.format(int(time.time()))
 
         # Gestione HFLIP
         if settings.HFLIP_IMAGE:
@@ -61,7 +62,8 @@ class SnapShotTask(TaskBase):
         if settings.WATERMARK_IMAGE and settings.WATERMARK_IMAGE.strip():
             logging.debug("-- WATERMARKING IMAGE")
             try:
-                frame = watermark_image(frame, Image.open(settings.WATERMARK_IMAGE))
+                frame = watermark_image(
+                    frame, Image.open(settings.WATERMARK_IMAGE))
             except:
                 logging.error(traceback.format_exc())
 
@@ -76,9 +78,3 @@ class SnapShotTask(TaskBase):
                 logging.error(str(status))
         except:
             logging.error(traceback.format_exc())
-
-
-
-		
-
-
