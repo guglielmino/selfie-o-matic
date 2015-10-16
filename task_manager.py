@@ -12,7 +12,7 @@ class TaskManager(object):
 
     __tasks = []
     __async_tasks = []
-    SCHEDULE_DELAY = 600  # Periodicita' in sec tra un esecuzione schedulata e la successiva
+    SCHEDULE_DELAY = 180  # Periodicita' in sec tra un esecuzione schedulata e la successiva
 
     __scheduled_tasks = []
     __worker = None
