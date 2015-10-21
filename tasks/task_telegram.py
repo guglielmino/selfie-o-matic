@@ -20,7 +20,8 @@ class TelegramTask(TaskBase):
         if 'SNAPSHOT_FILENAME' in self.device_ctx.custom_data:
             snaphot_file = self.device_ctx.custom_data['SNAPSHOT_FILENAME']
 
-            telegram_token = self.config_manager.getValue('TELEGRAM_TOKEN')
+            telegram_token = str(
+                self.config_manager.getValue('TELEGRAM_TOKEN'))
             bot = telegram.Bot(token=telegram_token)
 
             chat_ids = set()

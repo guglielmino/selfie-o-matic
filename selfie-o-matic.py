@@ -197,7 +197,7 @@ class SelfieOMatic(object):
         taskmanager.add_async_task(snap)
 
         telegram = TelegramTask(self.ctx, self._configManager)
-        # taskmanager.add_async_task(telegram)
+        taskmanager.add_async_task(telegram)
 
     def __process_tasks(self):
         self._is_snap = self._task_manager.cycle()
