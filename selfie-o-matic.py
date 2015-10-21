@@ -6,6 +6,7 @@ import sys
 import os
 import time
 import io
+from consts import *
 
 try:
     from picamera.array import PiRGBArray
@@ -36,7 +37,7 @@ from task_manager import TaskManager
 __author__ = "Fabrizio Guglielmino"
 
 APP_NAME = "Self-O-Matic"
-VERSION = "0.2"
+VERSION = "0.3"
 
 
 class DeviceContext(object):
@@ -88,6 +89,9 @@ class SelfieOMatic(object):
 
         except:
             logging.error("picamera init failed")
+
+        if not os.path.exists(PUBLISHED_FOLDER):
+            os.mkdir(PUBLISHED_FOLDER)
 
         # Scheduling del task di recupero immagini non uploadate
         upload_lost = UploadLostTask(self.ctx)

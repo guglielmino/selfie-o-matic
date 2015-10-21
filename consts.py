@@ -5,3 +5,4 @@
 
 
 LOCAL_IMAGE_PATTERN = '/media/snapshot{0}.jpg'
+PUBLISHED_FOLDER = '/media/published'

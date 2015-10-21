@@ -7,3 +7,9 @@ Version 0.2
 -----------
 
 Added recovery of photos not posted in realtime shots (ie miss WiFi connectivity, ... )
+
+Version 0.3
+------------
+
+Added post on twitter (need twython lib, pip install twython)
+Removed post in realtime (al posts on social networks are made by task_upload_lost, "lost" isn't case no more)

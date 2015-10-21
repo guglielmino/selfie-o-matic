@@ -1,10 +1,18 @@
 
+# Facebook
 FB_APP_ID = "FACEBOOK_APP_ID"
 FB_APP_SECRET = "FACEBOOK_SECRET"
 FB_ACCESS_TOKEN = 'FACEBOOK_ACCESS_TOKEN'
 
 # Album id where to post
 FB_ALBUM_ID = "FACEBOOK_ALBUMID"
+
+# Twitter
+TW_CONSUMER_KEY = 'Consumer Key'
+TW_CONSUMER_SECRET = 'Consumer Secret'
+TW_ACCESS_TOKEN = 'Access Token'
+TW_TW_ACCESS_TOKEN_SECRET = 'Access Token Secret'
+TW_STATUS_MSG = "Status message postato su Twitter"
 
 # Flip image before saving it
 HFLIP_IMAGE = False
