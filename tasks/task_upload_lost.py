@@ -19,6 +19,7 @@ import settings
 
 from fb import *
 from twitter import *
+import dropbox
 from consts import *
 
 
@@ -58,6 +59,17 @@ class UploadLostTask(TaskBase):
                     try:
                         tweet_image(image_file, settings.TW_STATUS_MSG)
                         tw_posted = True
+                    except:
+                        logging.error(traceback.format_exc())
+
+                    # Upload Dropbox
+                    try:
+                        client = dropbox.client.DropboxClient(
+                            settings.DB_ACCESS_TOKEN)
+                        f = open(image_file, 'rb')
+                        response = client.put_file(
+                            os.path.basename(image_file), f)
+                        logging.debug("Dropbox {0}".format(response))
                     except:
                         logging.error(traceback.format_exc())
 
