@@ -73,7 +73,7 @@ class UploadLostTask(TaskBase):
                     except:
                         logging.error(traceback.format_exc())
 
-                    if fb_posted and tw_posted:
+                    if fb_posted or tw_posted:
                         shutil.move(image_file, PUBLISHED_FOLDER)
 
     def is_completed(self):
