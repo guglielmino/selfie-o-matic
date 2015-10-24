@@ -6,6 +6,7 @@ import sys
 import os
 import time
 import io
+from consts import *
 
 try:
     from picamera.array import PiRGBArray
@@ -112,8 +113,11 @@ class SelfieOMatic(object):
             print(sys.exc_info()[0])
             print("----")
 
+        if not os.path.exists(PUBLISHED_FOLDER):
+            os.mkdir(PUBLISHED_FOLDER)
+
         # Scheduling del task di recupero immagini non uploadate
-        upload_lost = UploadLostTask(self.ctx)
+        upload_lost = UploadLostTask(self.ctx, self._configManager)
         self._task_manager.add_scheduled_task(upload_lost)
 
     def __initSocketClient(self):
@@ -125,6 +129,7 @@ class SelfieOMatic(object):
             self._socketClient.emit('register', getserial())
             self._socketClient.on('config_update', self.__on_config_update)
         except:
+            self._socketClient = None
             print("Error initialiting Socket.io client")
             print(sys.exc_info()[0])
 
@@ -140,6 +145,7 @@ class SelfieOMatic(object):
                 self.__update_local_config(configData)
 
         except:
+            self._serviceClient = None
             print("Error initialiting web service client")
             print(sys.exc_info()[0])
 

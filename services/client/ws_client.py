@@ -13,7 +13,8 @@ class WsClient(object):
         data = json.dumps({u"serial": serial, u"name": name})
         r = requests.post(url=service_url,
                           data=data,
-                          headers={'content-type': 'application/json'}
+                          headers={'content-type': 'application/json'},
+                          timeout=4
                           )
 
         return (r.status_code >= 200 and r.status_code < 300) or r.status_code == 304
@@ -22,7 +23,7 @@ class WsClient(object):
         res = None
         service_url = urljoin(
             self.__base_url, "api/machines/", serial, "config")
-        r = requests.get(url=service_url)
+        r = requests.get(url=service_url, timeout=4)
 
         if r.status_code == 200:
             res = r.json()

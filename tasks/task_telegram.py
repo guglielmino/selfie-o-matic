@@ -7,6 +7,7 @@ import logging
 from config_manager import ConfigManager
 
 from task_common import TaskBase
+from consts import *
 
 
 class TelegramTask(TaskBase):
@@ -21,7 +22,7 @@ class TelegramTask(TaskBase):
             snaphot_file = self.device_ctx.custom_data['SNAPSHOT_FILENAME']
 
             telegram_token = str(
-                self.config_manager.getValue('TELEGRAM_TOKEN'))
+                self.config_manager.getValue(SettingsConsts.KEY_TELEGRAM_TOKEN))
             bot = telegram.Bot(token=telegram_token)
 
             chat_ids = set()

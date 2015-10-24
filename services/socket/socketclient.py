@@ -1,12 +1,7 @@
 import time
 import simplejson as json
-#from config_manager import ConfigManager
 
 from socketIO_client import SocketIO, BaseNamespace
-
-import logging
-logging.getLogger('requests').setLevel(logging.WARNING)
-logging.basicConfig(level=logging.INFO)
 
 
 class SocketClient(object):
@@ -14,7 +9,7 @@ class SocketClient(object):
     callbacks = dict()
 
     def __init__(self, hostname, port):
-        self.sock = SocketIO(hostname, port)
+        self.sock = SocketIO(hostname, port, wait_for_connection=False)
 
     def on(self, event, callback):
         self.sock.on(event, callback)

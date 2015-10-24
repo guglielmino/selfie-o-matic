@@ -6,6 +6,7 @@ import logging
 
 from pushetta import Pushetta
 from task_common import TaskBase
+from consts import *
 
 
 class PushettaTask(TaskBase):
@@ -15,9 +16,10 @@ class PushettaTask(TaskBase):
         self._is_completed = False
 
     def execute(self):
-        p = Pushetta(self.config_manager.getValue("PUSHETTA_API_KEY"))
-        p.pushMessage(self.config_manager.getValue("PUSHETTA_CHANNEL"),
-                      "WOW! Another snapshot in Self-O-Matic history!")
+        p = Pushetta(self.config_manager.getValue(
+            SettingsConsts.KEY_PUSHETTA_API_KEY))
+        p.pushMessage(self.config_manager.getValue(SettingsConsts.KEY_PUSHETTA_CHANNEL),
+                      self.config_manager.getValue(SettingsConsts.KEY_PUSHETTA_MESSAGE))
         self._is_completed = True
 
     def is_completed(self):
