@@ -18,6 +18,7 @@ from task_common import TaskBase
 from image_lib import overlay_pil_image_pi, watermark_image
 
 from fb import FacebookHelper
+from consts import *
 
 
 class SnapShotTask(TaskBase):
@@ -53,7 +54,7 @@ class SnapShotTask(TaskBase):
         return self._is_completed
 
     def __save_image(self, frame):
-        image_file_name = '/tmp/snapshot{0}.jpg'.format(int(time.time()))
+        image_file_name = LOCAL_IMAGE_PATTERN.format(int(time.time()))
 
         # Gestione HFLIP
         if self.config_manager.getValue("HFLIP_IMAGE"):
@@ -65,23 +66,21 @@ class SnapShotTask(TaskBase):
         if watermark_image and watermark_image.strip():
             logging.debug("-- WATERMARKING IMAGE")
             try:
-                frame = watermark_image(
-                    frame, Image.open(watermark_image))
+                frame, Image.open(watermark_image))
+
             except:
                 logging.error(traceback.format_exc())
 
         frame.save(image_file_name, "JPEG")
-        self.device_ctx.custom_data['SNAPSHOT_FILENAME'] = image_file_name
+        self.device_ctx.custom_data['SNAPSHOT_FILENAME']=image_file_name
 
         # Post on FB
         try:
-            status = self._fb_helper.post_on_album(
+            status=self._fb_helper.post_on_album(
                 image_file_name, str(
                     self.config_manager.getValue("FB_ALBUM_ID")))
             if 'post_id' in status:
-                # TODO: Gestire la rimozione dell'immagine in un task di cleanup eseguito alla fine
-                # os.remove(image_file_name)
-                post_info = self._fb_helper.get_object_info(status['post_id'])
+                post_info=self._fb_helper.get_object_info(status['post_id'])
                 if 'picture' in post_info:
                     self.device_ctx.custom_data[
                         "FB_IMAGE_URL"] = post_info['picture']

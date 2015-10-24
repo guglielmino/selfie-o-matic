@@ -32,6 +32,7 @@ from tasks.task_snapshot import SnapShotTask
 from tasks.task_postonfb import PostOnFbTask
 from tasks.task_pushetta import PushettaTask
 from tasks.task_telegram import TelegramTask
+from tasks.task_upload_lost import UploadLostTask
 
 from task_manager import TaskManager
 from config_manager import ConfigManager
@@ -41,7 +42,8 @@ from services.socket.socketclient import SocketClient
 __author__ = "Fabrizio Guglielmino"
 
 APP_NAME = "Self-O-Matic"
-VERSION = "0.2"
+VERSION = "0.3"
+CODENAME = "cloudy"
 
 
 class DeviceContext(object):
@@ -62,7 +64,6 @@ class SelfieOMatic(object):
     # TODO: Verificare se si può rimuovere rawCapture
     rawCapture = None
     ctx = DeviceContext(None, None)
-
     # Configuration manager
     _configManager = None
 
@@ -83,7 +84,6 @@ class SelfieOMatic(object):
             app_path + '/cfg/selfie-o-matic.cfg')
 
         self.__initSocketClient()
-
         self.__initServiceClient()
 
         self.ctx.camera = None
@@ -111,6 +111,10 @@ class SelfieOMatic(object):
             logging.error("picamera init failed")
             print(sys.exc_info()[0])
             print("----")
+
+        # Scheduling del task di recupero immagini non uploadate
+        upload_lost = UploadLostTask(self.ctx)
+        self._task_manager.add_scheduled_task(upload_lost)
 
     def __initSocketClient(self):
         try:

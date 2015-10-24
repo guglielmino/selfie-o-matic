@@ -2,15 +2,19 @@
 
 # Progetto: Selfie-O-Matic
 
-import time
 from threading import Thread
+import time
 
 __author__ = "Fabrizio Guglielmino"
 
+
 class TaskManager(object):
-    
+
     __tasks = []
     __async_tasks = []
+    SCHEDULE_DELAY = 180  # Periodicita' in sec tra un esecuzione schedulata e la successiva
+
+    __scheduled_tasks = []
     __worker = None
 
     def __init__(self):
@@ -24,6 +28,9 @@ class TaskManager(object):
     def add_async_task(self, task):
         self.__async_tasks.append(task)
 
+    def add_scheduled_task(self, task):
+        self.__scheduled_tasks.append(task)
+
     def cycle(self):
         return self.__process(self.__tasks)
 
@@ -32,7 +39,7 @@ class TaskManager(object):
         if len(task_list) > 0:
             running_task = task_list[0]
             running_task.execute()
-            
+
             executed = True
 
             # Preemptive multitasking
@@ -46,11 +53,18 @@ class TaskManager(object):
                 if running_task in self.__async_tasks:
                     self.__async_tasks.remove(running_task)
 
-            
         return executed
 
-
     def __worker_processor(self):
+        last_schedule = time.time()
+
         while True:
             self.__process(self.__async_tasks)
+            diff_time = int(round(time.time() - last_schedule))
+
+            if (diff_time > self.SCHEDULE_DELAY):
+                last_schedule = time.time()
+                for sched_task in self.__scheduled_tasks:
+                    sched_task.execute()
+
             time.sleep(0.1)
