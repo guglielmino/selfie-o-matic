@@ -116,7 +116,7 @@ class SelfieOMatic(object):
         if not os.path.exists(PUBLISHED_FOLDER):
             os.mkdir(PUBLISHED_FOLDER)
 
-        # Scheduling del task di recupero immagini non uploadate
+        # Scheduling del task di recupero immagini da uploadate
         upload_lost = UploadLostTask(self.ctx, self._configManager)
         self._task_manager.add_scheduled_task(upload_lost)
 

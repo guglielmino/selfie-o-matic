@@ -34,6 +34,8 @@ class SnapShotTask(TaskBase):
     def execute(self):
         picture = None
 
+        logging.debug("-- SnapShotTask::execute")
+
         if "STILL_IMAGE" in self.device_ctx.custom_data:
             picture = self.device_ctx.custom_data["STILL_IMAGE"]
         else:
@@ -53,13 +55,13 @@ class SnapShotTask(TaskBase):
         image_file_name = LOCAL_IMAGE_PATTERN.format(int(time.time()))
         logging.debug("-- SAVING IMAGE TO {0}".format(image_file_name))
         # Gestione HFLIP
-        if self.config_manager.getValue(SettinsConsts.KEY_HFLIP_IMAGE):
+        if self.config_manager.getValue(SettingsConsts.KEY_HFLIP_IMAGE):
             logging.debug("-- FLIPPING IMAGE")
             frame = frame.transpose(Image.FLIP_LEFT_RIGHT)
 
         # Watermark della foto
         watermark_image = self.config_manager.getValue(
-            SettinsConsts.KEY_WATERMARK_IMAGE)
+            SettingsConsts.KEY_WATERMARK_IMAGE)
         if watermark_image and watermark_image.strip():
             logging.debug("-- WATERMARKING IMAGE")
             try:
