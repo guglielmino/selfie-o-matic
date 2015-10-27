@@ -68,13 +68,3 @@ class SnapShotTask(TaskBase):
                 logging.error(traceback.format_exc())
 
         frame.save(image_file_name, "JPEG")
-
-        # Post on FB
-        # try:
-        #    status = post_on_album(image_file_name, settings.FB_ALBUM_ID)
-        #    if 'post_id' in status:
-        #        os.remove(image_file_name)
-        #    else:
-        #        logging.error(str(status))
-        # except:
-        #    logging.error(traceback.format_exc())
