@@ -45,10 +45,11 @@ class UploadLostTask(TaskBase):
 
                     fb_posted = False
                     tw_posted = False
+
                     # Post on FB
                     try:
                         status = post_on_album(
-                            image_file, settings.FB_ALBUM_ID)
+                            image_file, settings.FB_ALBUM_ID, "")
                         if 'post_id' in status:
                             fb_posted = True
                         else:
@@ -64,6 +65,9 @@ class UploadLostTask(TaskBase):
                         logging.error(traceback.format_exc())
 
                     # Upload Dropbox
+                    client = None
+                    resized_file = ""
+
                     try:
                         # Resize image
                         resized_file = '/tmp/' + os.path.basename(image_file)
@@ -71,6 +75,10 @@ class UploadLostTask(TaskBase):
 
                         client = dropbox.client.DropboxClient(
                             settings.DB_ACCESS_TOKEN)
+
+                        client.get_file(os.path.basename(image_file))
+
+                    except dropbox.rest.ErrorResponse:
                         f = open(resized_file, 'rb')
                         response = client.put_file(
                             os.path.basename(resized_file), f)
