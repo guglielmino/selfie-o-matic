@@ -49,7 +49,7 @@ class UploadLostTask(TaskBase):
                     # Post on FB
                     try:
                         status = post_on_album(
-                            image_file, settings.FB_ALBUM_ID, "")
+                            image_file, settings.FB_ALBUM_ID, settings.FB_MESSAGE)
                         if 'post_id' in status:
                             fb_posted = True
                         else:

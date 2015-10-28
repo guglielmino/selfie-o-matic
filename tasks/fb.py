@@ -14,14 +14,15 @@ def post_image(image_path):
     return status
 
 
-def post_on_album(image_path, album_id):
+def post_on_album(image_path, album_id, message):
     cfg = {
         "page_id": settings.FB_APP_ID,
         "access_token": settings.FB_ACCESS_TOKEN
     }
 
     api = facebook.GraphAPI(access_token=cfg['access_token'])
-    status = api.put_photo(image=open(image_path), album_id=album_id)
+    status = api.put_photo(image=open(image_path),
+                           album_id=album_id, message=message)
 
     return status
 
