@@ -145,7 +145,7 @@ class SelfieOMatic(object):
 
     def __after_fade_event(self, taskmanager):
         push = PushettaTask(self.ctx)
-        taskmanager.add_async_task(push)
+        # taskmanager.add_async_task(push)
         snap = SnapShotTask(self.ctx)
         taskmanager.add_async_task(snap)
 
