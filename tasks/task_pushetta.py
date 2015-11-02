@@ -1,5 +1,7 @@
-import sys, os
 import time
+import os
+import io
+import traceback
 
 
 import logging
@@ -16,11 +18,13 @@ class PushettaTask(TaskBase):
         self._is_completed = False
 
     def execute(self):
-        p=Pushetta(settings.PUSHETTA_API_KEY)
-        p.pushMessage(settings.PUSHETTA_CHANNEL, "WOW! Another snapshot in Self-O-Matic history!")
-        self._is_completed = True
-        
+        try:
+            p = Pushetta(settings.PUSHETTA_API_KEY)
+            p.pushMessage(settings.PUSHETTA_CHANNEL,
+                          "WOW! Another snapshot in Self-O-Matic history!")
+            self._is_completed = True
+        except:
+            logging.error(traceback.format_exc())
 
     def is_completed(self):
         return self._is_completed
-
