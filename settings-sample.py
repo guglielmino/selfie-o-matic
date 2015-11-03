@@ -12,7 +12,7 @@ FB_ALBUM_ID = "FACEBOOK_ALBUMID"
 TW_CONSUMER_KEY = 'Consumer Key'
 TW_CONSUMER_SECRET = 'Consumer Secret'
 TW_ACCESS_TOKEN = 'Access Token'
-TW_TW_ACCESS_TOKEN_SECRET = 'Access Token Secret'
+TW_ACCESS_TOKEN_SECRET = 'Access Token Secret'
 TW_STATUS_MSG = "Status message postato su Twitter"
 
 # Flip image before saving it
