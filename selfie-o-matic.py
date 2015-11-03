@@ -64,7 +64,7 @@ class SelfieOMatic(object):
 
         logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                             datefmt='%m-%d %H:%M',
-                            filename='selfie-o-matic.log', level=logging.DEBUG)
+                            filename='selfie-o-matic.log', level=logging.INFO)
 
         self.ctx.camera = None
 
