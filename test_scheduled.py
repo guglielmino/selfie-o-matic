@@ -5,7 +5,7 @@ from datetime import datetime
 from glob import glob
 from task_manager import TaskManager
 from task_common import TaskBase
-
+from config_manager import ConfigManager
 
 tmanager = TaskManager()
 
@@ -18,8 +18,8 @@ class TestSchedTask(TaskBase):
     _name = ""
     files_pattern = '/tmp/*.jpg'
 
-    def __init__(self, ctx, name):
-        TaskBase.__init__(self, ctx)
+    def __init__(self, ctx, name, configManager):
+        TaskBase.__init__(self, ctx, configManager)
         self._name = name
 
     def execute(self):
@@ -42,7 +42,9 @@ def test_sheduled_tasks():
     print "Testing Scheduled Tasks...."
 
     context = SharedCtx()
-    task = TestSchedTask(context, "Sched Task")
+    configManager = ConfigManager('/tmp/selfie-o-matic.cfg')
+
+    task = TestSchedTask(context, "Sched Task", configManager)
 
     tmanager.add_scheduled_task(task)
 

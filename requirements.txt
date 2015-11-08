@@ -1,0 +1,21 @@
+
+Adafruit-GPIO==0.9.3
+Pillow==3.0.0
+RPi.GPIO==0.5.11
+argparse==1.2.1
+backports.ssl-match-hostname==3.4.0.2
+## FIXME: could not find svn URL in dependency_links for this package:
+distribute==0.6.24dev-r0
+dropbox==3.38
+numpy==1.6.2
+picamera==1.10
+requests==2.8.1
+schedule==0.3.2
+simplejson==3.8.1
+six==1.10.0
+socketIO-client==0.6.5
+spidev==3.1
+urllib3==1.12
+websocket-client==0.34.0
+wsgiref==0.1.2
+root@raspberry-pi:~# pip freeze > install.txt

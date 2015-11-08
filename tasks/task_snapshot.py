@@ -17,7 +17,6 @@ import logging
 from task_common import TaskBase
 from image_lib import overlay_pil_image_pi, watermark_image
 
-from fb import FacebookHelper
 from consts import *
 
 

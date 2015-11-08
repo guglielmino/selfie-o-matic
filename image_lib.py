@@ -21,21 +21,24 @@ __author__ = "Fabrizio Guglielmino"
 
 def overlay_pil_image_pi(camera, mask):
     pad = Image.new('RGB', (
-    ((camera.resolution[0] + 31) // 32) * 32,
-    ((camera.resolution[1] + 15) // 16) * 16,
+        ((camera.resolution[0] + 31) // 32) * 32,
+        ((camera.resolution[1] + 15) // 16) * 16,
     ), "#fff")
 
     x_pos = (camera.resolution[0] - mask.size[0]) // 2
     y_pos = (camera.resolution[1] - mask.size[1]) // 2
     pad.paste(mask, (x_pos, y_pos))
 
-    return camera.add_overlay(pad.tostring(), size=camera.resolution, layer=3, alpha=255)
+    return camera.add_overlay(pad.tobytes(), size=camera.resolution, layer=3, alpha=255)
+
 
 def overlay_np_image_pi(camera, mask):
     camera.add_overlay(np.getbuffer(mask), layer=3, alpha=128)
 
+
 def create_empty_image_pil(height, width, color):
     return Image.new('RGB', (height, width), color)
+
 
 def watermark_image(image_original, watermark_image):
     if image_original.mode != 'RGBA':

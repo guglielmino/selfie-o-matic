@@ -17,8 +17,6 @@ import logging
 from task_common import TaskBase
 from image_lib import overlay_pil_image_pi, watermark_image
 
-from fb import *
-
 
 class StillFrameTask(TaskBase):
 
@@ -39,6 +37,7 @@ class StillFrameTask(TaskBase):
             stream = io.BytesIO()
             self.device_ctx.camera.capture(
                 stream, use_video_port=True, format='jpeg')
+
             self.still_frame = Image.open(stream)
             self._overlay = overlay_pil_image_pi(
                 self.device_ctx.camera, self.still_frame)

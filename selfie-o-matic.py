@@ -6,6 +6,7 @@ import sys
 import os
 import time
 import io
+import traceback
 from consts import *
 
 try:
@@ -19,21 +20,17 @@ try:
 except:
     pass
 
-import cv2
-
 import logging
 import settings
 
-from utility import getserial, getname
+from utility import getserial, getname, init_key_read, restore_key_read, readKey
 
 from tasks.task_countdown import CountdownTask
 from tasks.task_fadetowhite import FadeToWhiteTask
 from tasks.task_stillframe import StillFrameTask
 from tasks.task_snapshot import SnapShotTask
 from tasks.task_postonfb import PostOnFbTask
-from tasks.task_pushetta import PushettaTask
-from tasks.task_telegram import TelegramTask
-from tasks.task_upload_lost import UploadLostTask
+from tasks.task_uploader import UploaderTask
 
 from task_manager import TaskManager
 from config_manager import ConfigManager
@@ -93,8 +90,6 @@ class SelfieOMatic(object):
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         try:
-            cv2.namedWindow("MainWin")
-
             self.ctx.camera = PiCamera()
             if self._configManager.getValue("HFLIP_IMAGE"):
                 self.ctx.camera.hflip = True
@@ -110,15 +105,15 @@ class SelfieOMatic(object):
 
         except:
             logging.error("picamera init failed")
-            print(sys.exc_info()[0])
-            print("----")
+            logging.error(sys.exc_info()[0])
+            print("picamera init failed")
 
         if not os.path.exists(PUBLISHED_FOLDER):
             os.mkdir(PUBLISHED_FOLDER)
 
         # Scheduling del task di recupero immagini da uploadate
-        upload_lost = UploadLostTask(self.ctx, self._configManager)
-        self._task_manager.add_scheduled_task(upload_lost)
+        uploader = UploaderTask(self.ctx, self._configManager)
+        self._task_manager.add_scheduled_task(uploader)
 
     def __initSocketClient(self):
         try:
@@ -131,7 +126,7 @@ class SelfieOMatic(object):
         except:
             self._socketClient = None
             print("Error initialiting Socket.io client")
-            print(sys.exc_info()[0])
+            logging.error(traceback.format_exc())
 
     def __initServiceClient(self):
         try:
@@ -147,10 +142,11 @@ class SelfieOMatic(object):
         except:
             self._serviceClient = None
             print("Error initialiting web service client")
-            print(sys.exc_info()[0])
+            logging.error(traceback.format_exc())
 
     def run(self):
         self._is_running = True
+        self._old_settings = init_key_read()
         while self._is_running:
             self.__process_input()
             self.__process_tasks()
@@ -161,25 +157,28 @@ class SelfieOMatic(object):
                 time.sleep(0.05)
 
     def cleanup(self):
+        restore_key_read(self._old_settings)
         if self.ctx.camera:
             self.ctx.camera.stop_preview()
             self.ctx.camera.close()
-        cv2.destroyAllWindows()
 
     def __process_input(self):
-        key = cv2.waitKey(10)
+
+        key = readKey()
+        if key:
+            print "Pressed {0}".format(key)
 
         if GPIO:
             input_state = GPIO.input(18)
             if input_state == False:
                 # Remap
-                key = ord('s')
+                key = 's'
 
-        if key == ord('q'):
-            cv2.destroyAllWindows()
+        if key == 'q':
+            restore_key_read(self._old_settings)
             self._is_running = False
 
-        elif key == ord('s'):
+        elif key == 's':
             if not self._is_snap:
                 self._is_snap = True
 
@@ -190,24 +189,11 @@ class SelfieOMatic(object):
                 snap = SnapShotTask(self.ctx, self._configManager)
                 postfb = PostOnFbTask(self.ctx, self._configManager)
 
-                # Async snapshot, image processing ad post on fb
-                still.set_on_completed(self.__after_fade_event)
-
                 self._task_manager.add_task(countdown)
                 self._task_manager.add_task(fade)
                 self._task_manager.add_task(still)
-                # self._task_manager.add_task(snap)
+                self._task_manager.add_task(snap)
                 self._task_manager.add_task(postfb)
-
-    def __after_fade_event(self, taskmanager):
-        push = PushettaTask(self.ctx, self._configManager)
-        taskmanager.add_async_task(push)
-
-        snap = SnapShotTask(self.ctx, self._configManager)
-        taskmanager.add_async_task(snap)
-
-        telegram = TelegramTask(self.ctx, self._configManager)
-        taskmanager.add_async_task(telegram)
 
     def __process_tasks(self):
         self._is_snap = self._task_manager.cycle()
