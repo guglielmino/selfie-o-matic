@@ -34,14 +34,19 @@ class StillFrameTask(TaskBase):
         TaskBase.__init__(self, ctx)
         self._is_completed = False
 
-
     def execute(self):
         if self.still_frame is None:
             stream = io.BytesIO()
-            self.device_ctx.camera.capture(stream, use_video_port=True, format='jpeg')
-            self.still_frame = Image.open(stream)
-            self._overlay = overlay_pil_image_pi(self.device_ctx.camera, self.still_frame)
-            self.device_ctx.custom_data["STILL_IMAGE"] = self.still_frame
+            self.device_ctx.camera.capture(
+                stream, use_video_port=True, format='jpeg')
+
+            try:
+                self.still_frame = Image.open(stream)
+                self._overlay = overlay_pil_image_pi(
+                    self.device_ctx.camera, self.still_frame)
+                self.device_ctx.custom_data["STILL_IMAGE"] = self.still_frame
+            except:
+                logging.error(traceback.format_exc())
 
         if self.start_time is None:
             self.start_time = time.time()
@@ -53,11 +58,5 @@ class StillFrameTask(TaskBase):
                 self.device_ctx.camera.remove_overlay(self._overlay)
             self._is_completed = True
 
-
     def is_completed(self):
         return self._is_completed
-
-
-		
-
-

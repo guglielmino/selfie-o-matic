@@ -64,7 +64,7 @@ class SelfieOMatic(object):
 
         logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
                             datefmt='%m-%d %H:%M',
-                            filename='selfie-o-matic.log', level=logging.INFO)
+                            filename='selfie-o-matic.log', level=logging.DEBUG)
 
         self.ctx.camera = None
 
@@ -144,7 +144,7 @@ class SelfieOMatic(object):
                 self._task_manager.add_task(postfb)
 
     def __after_fade_event(self, taskmanager):
-        push = PushettaTask(self.ctx)
+        # push = PushettaTask(self.ctx)
         # taskmanager.add_async_task(push)
         snap = SnapShotTask(self.ctx)
         taskmanager.add_async_task(snap)

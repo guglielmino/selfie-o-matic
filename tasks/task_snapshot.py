@@ -1,6 +1,8 @@
 import time
 import os
 import io
+import random
+import glob
 import traceback
 
 from PIL import Image
@@ -58,13 +60,23 @@ class SnapShotTask(TaskBase):
             logging.debug("-- FLIPPING IMAGE")
             frame = frame.transpose(Image.FLIP_LEFT_RIGHT)
 
+        frame = self.__watermark(frame)
+
+        frame.save(image_file_name, "JPEG")
+
+    def __watermark(self, frame):
         # Watermark della foto
-        if settings.WATERMARK_IMAGE and settings.WATERMARK_IMAGE.strip():
+
+        if settings.WATERMARK_PATH and settings.WATERMARK_PATH.strip():
             logging.debug("-- WATERMARKING IMAGE")
             try:
+                skins = glob.glob(settings.WATERMARK_PATH.strip())
+
+                skin = random.choice(skins)
+                logging.debug("-- WATERMARKING with skin {0}".format(skin))
                 frame = watermark_image(
-                    frame, Image.open(settings.WATERMARK_IMAGE))
+                    frame, Image.open(skin))
             except:
                 logging.error(traceback.format_exc())
 
-        frame.save(image_file_name, "JPEG")
+        return frame

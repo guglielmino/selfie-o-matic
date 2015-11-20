@@ -29,7 +29,7 @@ def overlay_pil_image_pi(camera, mask):
     y_pos = (camera.resolution[1] - mask.size[1]) // 2
     pad.paste(mask, (x_pos, y_pos))
 
-    return camera.add_overlay(pad.tostring(), size=camera.resolution, layer=3, alpha=255)
+    return camera.add_overlay(pad.tobytes(), size=camera.resolution, layer=3, alpha=255)
 
 
 def overlay_np_image_pi(camera, mask):

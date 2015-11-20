@@ -1,38 +1,36 @@
 import sys
 
 try:
-	import settings
+    import settings
 except:
-	print "ERROR -- You need `settings.py` with application settings (create if if doesn't exists)"
-	raise
+    print "ERROR -- You need `settings.py` with application settings (create if if doesn't exists)"
+    raise
 
-FB_APP_ID="841335565958226"
+FB_APP_ID = "841335565958226"
+
 
 class ConfigManager(object):
 
-	def getValue(self, config_key):
-		mod_dic = self.__getModuleDict()
-		res = None
+    def getValue(self, config_key):
+        mod_dic = self.__getModuleDict()
+        res = None
 
-		if mod_dic and config_key in mod_dic:
-			res = mod_dic[config_key]
+        if mod_dic and config_key in mod_dic:
+            res = mod_dic[config_key]
 
-		return res
+        return res
 
-	def setValue(self, config_key, value):
-		res = False
+    def setValue(self, config_key, value):
+        res = False
 
-		mod_dic = self.__getModuleDict()
-		if mod_dic:
-			mod_dic[config_key] = value
-			res = True
+        mod_dic = self.__getModuleDict()
+        if mod_dic:
+            mod_dic[config_key] = value
+            res = True
 
-		return res
+        return res
 
-
-
-
-	def __getModuleDict(self):
-		#module = sys.modules[self.__module__]
-		module = sys.modules['settings']
-		return module.__dict__
+    def __getModuleDict(self):
+        #module = sys.modules[self.__module__]
+        module = sys.modules['settings']
+        return module.__dict__

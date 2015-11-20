@@ -19,7 +19,8 @@ TW_STATUS_MSG = "Status message postato su Twitter"
 HFLIP_IMAGE = False
 
 # Watermark image
-WATERMARK_IMAGE = 'res/images/make_faire_logo.png'
+# WATERMARK_IMAGE = 'res/images/make_faire_logo.png' # --- OBSOLETO
+WATERMARK_PATH = 'res/images/skins/*.png'
 
 # Push on pushetta
 PUSHETTA_API_KEY = "API_KEY"
