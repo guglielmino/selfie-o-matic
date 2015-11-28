@@ -14,7 +14,7 @@ class WsClient(object):
         r = requests.post(url=service_url,
                           data=data,
                           headers={'content-type': 'application/json'},
-                          timeout=4
+                          timeout=3
                           )
 
         return (r.status_code >= 200 and r.status_code < 300) or r.status_code == 304

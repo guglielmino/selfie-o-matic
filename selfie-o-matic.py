@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # coding=utf-8
 
 # Progetto: Selfie-O-Matic
@@ -6,7 +7,14 @@ import sys
 import os
 import time
 import io
+import signal
 import traceback
+
+# Set della working dir nella root dello script
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 from consts import *
 
 try:
@@ -18,7 +26,7 @@ except:
 try:
     import RPi.GPIO as GPIO
 except:
-    pass
+    GPIO = None
 
 import logging
 import settings
@@ -115,6 +123,16 @@ class SelfieOMatic(object):
         uploader = UploaderTask(self.ctx, self._configManager)
         self._task_manager.add_scheduled_task(uploader)
 
+        try:
+            signal.signal(signal.SIGUSR1, self.sig_usr1_handler)
+        except:
+            logging.error("signal handler not installed")
+            logging.error(sys.exc_info()[0])
+
+    def sig_usr1_handler(self, signum, frame):
+        logger.debug("signal")
+        self.__exec_workflow()
+
     def __initSocketClient(self):
         try:
             self._socketClient = SocketClient(
@@ -133,6 +151,8 @@ class SelfieOMatic(object):
             serial = getserial()
             self._serviceClient = WsClient(
                 ''.join(["http://", settings.API_HOSTNAME, ":", str(settings.API_PORT)]))
+            # TODO: Valutare l'uso di header o parametri alla connection per l'identità
+            #       del socket associata al seriale
             self._serviceClient.register_myself(serial, getname())
             # Acquisizione della config storata server side
             configData = self._serviceClient.get_config(serial)
@@ -146,15 +166,16 @@ class SelfieOMatic(object):
 
     def run(self):
         self._is_running = True
-        self._old_settings = init_key_read()
+
+        try:
+            self._old_settings = init_key_read()
+        except:
+            logging.error(traceback.format_exc())
+
         while self._is_running:
             self.__process_input()
             self.__process_tasks()
-
-            if self._socketClient:
-                self._socketClient.wait(seconds=0.05)
-            else:
-                time.sleep(0.05)
+            time.sleep(0.05)
 
     def cleanup(self):
         restore_key_read(self._old_settings)
@@ -179,21 +200,24 @@ class SelfieOMatic(object):
             self._is_running = False
 
         elif key == 's':
-            if not self._is_snap:
-                self._is_snap = True
+            self.__exec_workflow()
 
-                # Snapshot workflow
-                countdown = CountdownTask(self.ctx, self._configManager)
-                fade = FadeToWhiteTask(self.ctx, self._configManager)
-                still = StillFrameTask(self.ctx, self._configManager)
-                snap = SnapShotTask(self.ctx, self._configManager)
-                postfb = PostOnFbTask(self.ctx, self._configManager)
+    def __exec_workflow(self):
+        if not self._is_snap:
+            self._is_snap = True
 
-                self._task_manager.add_task(countdown)
-                self._task_manager.add_task(fade)
-                self._task_manager.add_task(still)
-                self._task_manager.add_task(snap)
-                self._task_manager.add_task(postfb)
+            # Snapshot workflow
+            countdown = CountdownTask(self.ctx, self._configManager)
+            fade = FadeToWhiteTask(self.ctx, self._configManager)
+            still = StillFrameTask(self.ctx, self._configManager)
+            snap = SnapShotTask(self.ctx, self._configManager)
+            postfb = PostOnFbTask(self.ctx, self._configManager)
+
+            self._task_manager.add_task(countdown)
+            self._task_manager.add_task(fade)
+            self._task_manager.add_task(still)
+            self._task_manager.add_task(snap)
+            self._task_manager.add_task(postfb)
 
     def __process_tasks(self):
         self._is_snap = self._task_manager.cycle()
