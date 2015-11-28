@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # coding=utf-8
 
 # Progetto: Selfie-O-Matic
@@ -6,7 +7,14 @@ import sys
 import os
 import time
 import io
+import signal
 import traceback
+
+# Set della working dir nella root dello script
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 from consts import *
 
 try:
@@ -18,7 +26,7 @@ except:
 try:
     import RPi.GPIO as GPIO
 except:
-    pass
+    GPIO = None
 
 import logging
 import settings
@@ -90,17 +98,16 @@ class SelfieOMatic(object):
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         try:
-            self.ctx.camera = PiCamera()
-            
+            self.ctx.camera = PiCamera()        
             self.__setCamera()
 
             self.ctx.camera.start_preview()
             self.rawCapture = PiRGBArray(self.ctx.camera)
             time.sleep(0.3)
 
-        except:
+        except Exception, e:
             logging.error("picamera init failed")
-            logging.error(sys.exc_info()[0])
+            logging.error(e, exc_info=True)
             print("picamera init failed")
 
         if not os.path.exists(PUBLISHED_FOLDER):
@@ -109,6 +116,7 @@ class SelfieOMatic(object):
         # Scheduling del task di recupero immagini da uploadate
         uploader = UploaderTask(self.ctx, self._configManager)
         self._task_manager.add_scheduled_task(uploader)
+
 
     def __setCamera(self):
         self.ctx.camera.sharpness = 0
@@ -119,7 +127,7 @@ class SelfieOMatic(object):
         self.ctx.camera.video_stabilization = False
         self.ctx.camera.exposure_compensation = 0
         self.ctx.camera.exposure_mode = 'auto'
-        self.ctx.camera.meter_mode = 'average'
+        self.ctx.camera.meter_mode = 'matrix'
         self.ctx.camera.awb_mode = 'auto'
         self.ctx.camera.image_effect = 'none'
         self.ctx.camera.color_effects = None
@@ -127,7 +135,7 @@ class SelfieOMatic(object):
         if self._configManager.getValue("HFLIP_IMAGE"):
             self.ctx.camera.hflip = True
 
-        camera.vflip = False
+        self.ctx.camera.vflip = False
 
 
     def __initSocketClient(self):
@@ -138,38 +146,41 @@ class SelfieOMatic(object):
             print("REGISTERING SOCKETCLIENT ON {0}".format(serial))
             self._socketClient.emit('register', getserial())
             self._socketClient.on('config_update', self.__on_config_update)
-        except:
+        except Exception, e:
             self._socketClient = None
             print("Error initialiting Socket.io client")
-            logging.error(traceback.format_exc())
+            logging.error(e, exc_info=True)
 
     def __initServiceClient(self):
         try:
             serial = getserial()
             self._serviceClient = WsClient(
                 ''.join(["http://", settings.API_HOSTNAME, ":", str(settings.API_PORT)]))
+            # TODO: Valutare l'uso di header o parametri alla connection per l'identità
+            #       del socket associata al seriale
             self._serviceClient.register_myself(serial, getname())
             # Acquisizione della config storata server side
             configData = self._serviceClient.get_config(serial)
             if configData:
                 self.__update_local_config(configData)
 
-        except:
+        except Exception, e:
             self._serviceClient = None
             print("Error initialiting web service client")
-            logging.error(traceback.format_exc())
+            logging.error(e, exc_info=True)
 
     def run(self):
         self._is_running = True
-        self._old_settings = init_key_read()
+
+        try:
+            self._old_settings = init_key_read()
+        except:
+            logging.error(traceback.format_exc())
+
         while self._is_running:
             self.__process_input()
             self.__process_tasks()
-
-            if self._socketClient:
-                self._socketClient.wait(seconds=0.05)
-            else:
-                time.sleep(0.05)
+            time.sleep(0.05)
 
     def cleanup(self):
         restore_key_read(self._old_settings)
@@ -194,21 +205,24 @@ class SelfieOMatic(object):
             self._is_running = False
 
         elif key == 's':
-            if not self._is_snap:
-                self._is_snap = True
+            self.__exec_workflow()
 
-                # Snapshot workflow
-                countdown = CountdownTask(self.ctx, self._configManager)
-                fade = FadeToWhiteTask(self.ctx, self._configManager)
-                still = StillFrameTask(self.ctx, self._configManager)
-                snap = SnapShotTask(self.ctx, self._configManager)
-                postfb = PostOnFbTask(self.ctx, self._configManager)
+    def __exec_workflow(self):
+        if not self._is_snap:
+            self._is_snap = True
 
-                self._task_manager.add_task(countdown)
-                self._task_manager.add_task(fade)
-                self._task_manager.add_task(still)
-                self._task_manager.add_task(snap)
-                self._task_manager.add_task(postfb)
+            # Snapshot workflow
+            countdown = CountdownTask(self.ctx, self._configManager)
+            fade = FadeToWhiteTask(self.ctx, self._configManager)
+            still = StillFrameTask(self.ctx, self._configManager)
+            snap = SnapShotTask(self.ctx, self._configManager)
+            postfb = PostOnFbTask(self.ctx, self._configManager)
+
+            self._task_manager.add_task(countdown)
+            self._task_manager.add_task(fade)
+            self._task_manager.add_task(still)
+            self._task_manager.add_task(snap)
+            self._task_manager.add_task(postfb)
 
     def __process_tasks(self):
         self._is_snap = self._task_manager.cycle()

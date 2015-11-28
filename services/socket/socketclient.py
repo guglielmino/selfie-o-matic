@@ -1,5 +1,6 @@
 import time
 import simplejson as json
+from threading import Thread
 
 from socketIO_client import SocketIO, BaseNamespace
 
@@ -10,6 +11,9 @@ class SocketClient(object):
 
     def __init__(self, hostname, port):
         self.sock = SocketIO(hostname, port, wait_for_connection=False)
+        self.__worker = Thread(target=self.__worker, args=())
+        self.__worker.setDaemon(True)
+        self.__worker.start()
 
     def on(self, event, callback):
         self.sock.on(event, callback)
@@ -18,7 +22,11 @@ class SocketClient(object):
         self.sock.emit(event, data)
 
     def wait(self, seconds):
-        self.sock.wait(seconds=seconds)
+        if self.sock.connected:
+            self.sock.wait(seconds=seconds)
+
+    def __worker(self):
+        self.sock.wait()
 
 
 def on_config_update(data):

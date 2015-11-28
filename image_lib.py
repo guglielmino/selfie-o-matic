@@ -4,7 +4,7 @@
 # Note		: Image manipulation
 
 
-import cv2
+#import cv2
 import numpy as np
 import logging
 
@@ -48,3 +48,13 @@ def watermark_image(image_original, watermark_image):
     layer.paste(watermark_image, (0, 0))
 
     return Image.composite(layer, image_original, layer)
+
+
+def resize_image_height(image_file, output_file, height):
+    baseheight = height
+    img = Image.open(image_file)
+    hpercent = (baseheight / float(img.size[1]))
+    wsize = int((float(img.size[0]) * float(hpercent)))
+    img = img.resize((wsize, baseheight), Image.ANTIALIAS)
+
+    img.save(output_file)
