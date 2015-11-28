@@ -91,13 +91,8 @@ class SelfieOMatic(object):
             GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         try:
             self.ctx.camera = PiCamera()
-            if self._configManager.getValue("HFLIP_IMAGE"):
-                self.ctx.camera.hflip = True
-
-            self.ctx.camera.framerate = 24
-            self.ctx.camera.preview_fullscreen = True
-            self.ctx.camera.awb_mode = 'sunlight'
-            self.ctx.camera.exposure_mode = 'snow'
+            
+            self.__setCamera()
 
             self.ctx.camera.start_preview()
             self.rawCapture = PiRGBArray(self.ctx.camera)
@@ -114,6 +109,26 @@ class SelfieOMatic(object):
         # Scheduling del task di recupero immagini da uploadate
         uploader = UploaderTask(self.ctx, self._configManager)
         self._task_manager.add_scheduled_task(uploader)
+
+    def __setCamera(self):
+        self.ctx.camera.sharpness = 0
+        self.ctx.camera.contrast = 0
+        self.ctx.camera.brightness = 50
+        self.ctx.camera.saturation = 0
+        self.ctx.camera.ISO = 0
+        self.ctx.camera.video_stabilization = False
+        self.ctx.camera.exposure_compensation = 0
+        self.ctx.camera.exposure_mode = 'auto'
+        self.ctx.camera.meter_mode = 'average'
+        self.ctx.camera.awb_mode = 'auto'
+        self.ctx.camera.image_effect = 'none'
+        self.ctx.camera.color_effects = None
+        self.ctx.camera.rotation = 0
+        if self._configManager.getValue("HFLIP_IMAGE"):
+            self.ctx.camera.hflip = True
+
+        camera.vflip = False
+
 
     def __initSocketClient(self):
         try:
