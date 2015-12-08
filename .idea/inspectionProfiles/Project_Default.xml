@@ -1,0 +1,30 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="17">
+            <item index="0" class="java.lang.String" itemvalue="six" />
+            <item index="1" class="java.lang.String" itemvalue="numpy" />
+            <item index="2" class="java.lang.String" itemvalue="requests" />
+            <item index="3" class="java.lang.String" itemvalue="socketIO-client" />
+            <item index="4" class="java.lang.String" itemvalue="argparse" />
+            <item index="5" class="java.lang.String" itemvalue="websocket-client" />
+            <item index="6" class="java.lang.String" itemvalue="simplejson" />
+            <item index="7" class="java.lang.String" itemvalue="schedule" />
+            <item index="8" class="java.lang.String" itemvalue="spidev" />
+            <item index="9" class="java.lang.String" itemvalue="dropbox" />
+            <item index="10" class="java.lang.String" itemvalue="Adafruit-GPIO" />
+            <item index="11" class="java.lang.String" itemvalue="backports.ssl-match-hostname" />
+            <item index="12" class="java.lang.String" itemvalue="picamera" />
+            <item index="13" class="java.lang.String" itemvalue="RPi.GPIO" />
+            <item index="14" class="java.lang.String" itemvalue="distribute" />
+            <item index="15" class="java.lang.String" itemvalue="urllib3" />
+            <item index="16" class="java.lang.String" itemvalue="Pillow" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

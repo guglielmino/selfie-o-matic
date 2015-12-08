@@ -3,11 +3,8 @@
 
 # Progetto: Selfie-O-Matic
 
-import sys
 import os
 import time
-import io
-import signal
 import traceback
 
 # Set della working dir nella root dello script
@@ -37,7 +34,7 @@ from tasks.task_countdown import CountdownTask
 from tasks.task_fadetowhite import FadeToWhiteTask
 from tasks.task_stillframe import StillFrameTask
 from tasks.task_snapshot import SnapShotTask
-from tasks.task_postonfb import PostOnFbTask
+from tasks.task_showfbsign import ShowFbSignTask
 from tasks.task_uploader import UploaderTask
 
 from task_manager import TaskManager
@@ -216,7 +213,7 @@ class SelfieOMatic(object):
             fade = FadeToWhiteTask(self.ctx, self._configManager)
             still = StillFrameTask(self.ctx, self._configManager)
             snap = SnapShotTask(self.ctx, self._configManager)
-            postfb = PostOnFbTask(self.ctx, self._configManager)
+            postfb = ShowFbSignTask(self.ctx, self._configManager)
 
             self._task_manager.add_task(countdown)
             self._task_manager.add_task(fade)

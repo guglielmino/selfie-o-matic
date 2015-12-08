@@ -8,8 +8,6 @@ try:
 except:
     pass
 
-import logging
-
 from image_lib import create_empty_image_pil, overlay_pil_image_pi
 from task_common import TaskBase
 

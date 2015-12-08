@@ -4,10 +4,8 @@
 # Note		: Upload multipart/form-data file utility
 
 import os
-import settings
 import requests
 import logging
-
 
 class UploaderHelper(object):
     post_url = ''

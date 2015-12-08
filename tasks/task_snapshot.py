@@ -1,10 +1,8 @@
 import time
-import os
 import io
 import traceback
 
 from PIL import Image
-import threading
 
 try:
     from picamera.array import PiRGBArray
@@ -15,8 +13,6 @@ except:
 import logging
 
 from task_common import TaskBase
-from image_lib import overlay_pil_image_pi, watermark_image
-
 from consts import *
 
 
@@ -66,7 +62,6 @@ class SnapShotTask(TaskBase):
             try:
                 frame = watermark_image(
                     frame, Image.open(watermark_image))
-
             except:
                 logging.error(traceback.format_exc())
 

@@ -8,17 +8,14 @@ except:
 
 from PIL import Image
 
-import logging
-
 from image_lib import overlay_pil_image_pi
 from task_common import TaskBase
 
-'''
-Show FB Like image (real post on fb is made by snapshop task)
-'''
+class ShowFbSignTask(TaskBase):
+    '''
+    Show FB Like image (real post on fb is made server side)
+    '''
 
-
-class PostOnFbTask(TaskBase):
     WAIT_SECONDS = 3
     _is_completed = False
     start_time = None

@@ -18,4 +18,3 @@ spidev==3.1
 urllib3==1.12
 websocket-client==0.34.0
 wsgiref==0.1.2
-root@raspberry-pi:~# pip freeze > install.txt

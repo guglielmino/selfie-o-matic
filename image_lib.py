@@ -4,7 +4,6 @@
 # Note		: Image manipulation
 
 
-#import cv2
 import numpy as np
 import logging
 

@@ -5,8 +5,6 @@
 
 
 import os
-import sys
-import io
 import traceback
 from glob import glob
 import time

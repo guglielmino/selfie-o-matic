@@ -6,8 +6,6 @@ try:
 except:
     pass
 
-
-import logging
 from PIL import Image
 
 from image_lib import overlay_pil_image_pi
