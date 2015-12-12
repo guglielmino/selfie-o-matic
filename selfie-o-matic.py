@@ -18,7 +18,10 @@ try:
     from picamera.array import PiRGBArray
     from picamera import PiCamera
 except:
-    pass
+    # Monkey patch camera Class
+    class PiCamera:
+        def start_preview(self):
+            pass
 
 try:
     import RPi.GPIO as GPIO
@@ -86,8 +89,6 @@ class SelfieOMatic(object):
         self._configManager = ConfigManager(
             app_path + '/cfg/selfie-o-matic.cfg')
 
-        self.__initSocketClient()
-        self.__initServiceClient()
 
         self.ctx.camera = None
 
@@ -107,18 +108,24 @@ class SelfieOMatic(object):
             logging.error(e, exc_info=True)
             print("picamera init failed")
 
-        if not os.path.exists(PUBLISHED_FOLDER):
-            os.mkdir(PUBLISHED_FOLDER)
+        if not os.path.exists(settings.PUBLISHED_FOLDER):
+            os.mkdir(settings.PUBLISHED_FOLDER)
+
+        self.__initSocketClient()
+        self.__initServiceClient()
+
 
         # Scheduling del task di recupero immagini da uploadate
         uploader = UploaderTask(self.ctx, self._configManager)
         self._task_manager.add_scheduled_task(uploader)
 
-
     def __setCamera(self):
+        image_settings = self._configManager.getValue('IMAGE')
         self.ctx.camera.sharpness = 0
         self.ctx.camera.contrast = 0
-        self.ctx.camera.brightness = 50
+        self.ctx.camera.brightness = image_settings['brightness'] if image_settings and 'brightness' in image_settings \
+            else 50
+
         self.ctx.camera.saturation = 0
         self.ctx.camera.ISO = 0
         self.ctx.camera.video_stabilization = False
@@ -127,10 +134,10 @@ class SelfieOMatic(object):
         self.ctx.camera.meter_mode = 'matrix'
         self.ctx.camera.awb_mode = 'auto'
         self.ctx.camera.image_effect = 'none'
-        self.ctx.camera.color_effects = None
+        self.ctx.camera.image_effect = image_settings['image_effect'] if image_settings and 'image_effect' in image_settings else 'none'
+
         self.ctx.camera.rotation = 0
-        if self._configManager.getValue("HFLIP_IMAGE"):
-            self.ctx.camera.hflip = True
+        self.ctx.camera.hflip = image_settings['hflip_image'] if image_settings and 'hflip_image' in image_settings else True
 
         self.ctx.camera.vflip = False
 
@@ -233,6 +240,8 @@ class SelfieOMatic(object):
             # Store delle chiavi di config ricevute dal servizio
             self._configManager.setValue(key.upper(), configData[key])
             print("Config {0}={1}".format(key.upper(), configData[key]))
+        if 'image' in configData:
+            self.__setCamera()
 
 
 if __name__ == '__main__':

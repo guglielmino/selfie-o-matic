@@ -1,11 +1,11 @@
 
-Adafruit-GPIO==0.9.3
+#Adafruit-GPIO==0.9.3
 Pillow==3.0.0
-RPi.GPIO==0.5.11
+#RPi.GPIO==0.5.11
 argparse==1.2.1
 backports.ssl-match-hostname==3.4.0.2
 ## FIXME: could not find svn URL in dependency_links for this package:
-distribute==0.6.24dev-r0
+distribute==0.7.3
 dropbox==3.38
 numpy==1.6.2
 picamera==1.10

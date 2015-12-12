@@ -14,7 +14,7 @@ import logging
 
 from task_common import TaskBase
 from consts import *
-
+from settings import LOCAL_IMAGE_PATTERN, PUBLISHED_FOLDER
 
 class SnapShotTask(TaskBase):
 

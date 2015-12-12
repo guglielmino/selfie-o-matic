@@ -19,10 +19,11 @@ import settings
 
 import dropbox
 from consts import *
+import settings
 
 
 class UploaderTask(TaskBase):
-    files_pattern = LOCAL_IMAGE_PATTERN.format('*')
+    files_pattern = settings.LOCAL_IMAGE_PATTERN.format('*')
     # Vengono postati i file più vecchi di x sec per evitare di andare in concorrenza con i processi di
     # creazion e modifica della foto
     age_in_seconds = 10
