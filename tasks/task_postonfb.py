@@ -30,7 +30,6 @@ class PostOnFbTask(TaskBase):
         TaskBase.__init__(self, ctx)
         self._is_completed = False
 
-
     def execute(self):
         if self.start_time is None:
             self.start_time = time.time()
