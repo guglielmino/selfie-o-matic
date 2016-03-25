@@ -45,6 +45,8 @@ from config_manager import ConfigManager
 from services.client.ws_client import WsClient
 from services.socket.socketclient import SocketClient
 
+from tendo import singleton
+
 __author__ = "Fabrizio Guglielmino"
 
 APP_NAME = "Self-O-Matic"
@@ -245,7 +247,8 @@ class SelfieOMatic(object):
 
 
 if __name__ == '__main__':
-
+    # Gestione della singola istanza
+    me = singleton.SingleInstance()
     selfie = SelfieOMatic()
     selfie.run()
     selfie.cleanup()
