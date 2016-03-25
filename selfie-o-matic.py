@@ -34,6 +34,8 @@ from tasks.task_upload_lost import UploadLostTask
 
 from task_manager import TaskManager
 
+from tendo import singleton
+
 __author__ = "Fabrizio Guglielmino"
 
 APP_NAME = "Self-O-Matic"
@@ -153,7 +155,8 @@ class SelfieOMatic(object):
         self._is_snap = self._task_manager.cycle()
 
 if __name__ == '__main__':
-
+    # Gestione della singola istanza
+    me = singleton.SingleInstance()
     selfie = SelfieOMatic()
     selfie.run()
     selfie.cleanup()

@@ -19,7 +19,6 @@ import settings
 
 from fb import *
 from twitter import *
-import dropbox
 from consts import *
 from image_lib import resize_image_height
 
@@ -61,28 +60,6 @@ class UploadLostTask(TaskBase):
                     try:
                         tweet_image(image_file, settings.TW_STATUS_MSG)
                         tw_posted = True
-                    except:
-                        logging.error(traceback.format_exc())
-
-                    # Upload Dropbox
-                    client = None
-                    resized_file = ""
-
-                    try:
-                        # Resize image
-                        resized_file = '/tmp/' + os.path.basename(image_file)
-                        resize_image_height(image_file, resized_file, 900)
-
-                        client = dropbox.client.DropboxClient(
-                            settings.DB_ACCESS_TOKEN)
-
-                        client.get_file(os.path.basename(image_file))
-
-                    except dropbox.rest.ErrorResponse:
-                        f = open(resized_file, 'rb')
-                        response = client.put_file(
-                            os.path.basename(resized_file), f)
-                        logging.debug("Dropbox {0}".format(response))
                     except:
                         logging.error(traceback.format_exc())
 
