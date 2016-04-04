@@ -71,11 +71,11 @@ class SnapShotTask(TaskBase):
             logging.debug("-- WATERMARKING IMAGE")
             try:
                 skins = glob.glob(settings.WATERMARK_PATH.strip())
-
-                skin = random.choice(skins)
-                logging.debug("-- WATERMARKING with skin {0}".format(skin))
-                frame = watermark_image(
-                    frame, Image.open(skin))
+                if len(skins) > 0:
+                    skin = random.choice(skins)
+                    logging.debug("-- WATERMARKING with skin {0}".format(skin))
+                    frame = watermark_image(
+                        frame, Image.open(skin))
             except:
                 logging.error(traceback.format_exc())
 
