@@ -137,12 +137,12 @@ class SelfieOMatic(object):
                 postfb = PostOnFbTask(self.ctx)
 
                 # Async snapshot, image processing ad post on fb
-                still.set_on_completed(self.__after_fade_event)
+                #still.set_on_completed(self.__after_fade_event)
 
                 self._task_manager.add_task(countdown)
                 self._task_manager.add_task(fade)
                 self._task_manager.add_task(still)
-                # self._task_manager.add_task(snap)
+                self._task_manager.add_task(snap)
                 self._task_manager.add_task(postfb)
 
     def __after_fade_event(self, taskmanager):
